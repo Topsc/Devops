@@ -5,30 +5,30 @@ pipeline {
     
 
     stages {
-        // stage('Git checkout') {
-        //     steps{
-        //         // Get source code from a GitHub repository
+        stage('Git checkout') {
+            steps{
+                // Get source code from a GitHub repository
                 
-        //         git branch:'main', credentialsId:'github-credential', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
+                git branch:'main', credentialsId:'github-credential', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
             
-        //     }
-        // }
+            }
+        }
         // CI
-        // stage('npm install') {
-        //     steps{
-        //         dir("./") {
-        //             sh 'yarn install'
-        //         }
-        //     }
-        // }
+        stage('npm install') {
+            steps{
+                dir("./") {
+                    sh 'yarn install'
+                }
+            }
+        }
         
-        // stage('Build') {
-        //     steps{
-        //         dir("./") {
-        //             sh 'yarn build'
-        //         }
-        //     }
-        // }
+        stage('Build') {
+            steps{
+                dir("./") {
+                    sh 'yarn build'
+                }
+            }
+        }
     
 // CD
 
@@ -37,7 +37,7 @@ pipeline {
                 dir("./"){
                 withAWS(region:"ap-southeast-2", credentials:"TechScrumProjectAWS"){
                     // s3Delete(bucket: "${env.UATS3BucketName}", path:'**/*')
-                    s3Upload(bucket: "techscrum-fe-20230716121035836400000002", workingDir:'build', includePathPattern:'**/*');
+                    s3Upload(bucket: "techscrum-linda-frontend", workingDir:'build', includePathPattern:'**/*');
                     }
                 } 
             }   

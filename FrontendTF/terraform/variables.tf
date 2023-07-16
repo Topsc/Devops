@@ -14,10 +14,10 @@ variable "region" {
   default = "ap-southeast-2"
 }
 
-variable "bucket_prefix" {
+variable "bucket_name" {
   type        = string
-  description = "The prefix for the S3 bucket"
-  default     = "techscrum-fe-"
+  description = "The name for the S3 bucket"
+  default     = "techscrum-linda-frontend"
 }
 variable "domain_name" {
   type        = string
