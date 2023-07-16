@@ -8,12 +8,12 @@ pipeline {
         stage('Git checkout') {
             steps{
                 // Get source code from a GitHub repository
-                // git@github.com:RayMaAU/openhack-devops-team.git
+                
                 git branch:'main', credentialsId:'github-credential', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
             
             }
         }
-        
+        // CI
         stage('npm install') {
             steps{
                 dir("./") {
@@ -29,45 +29,18 @@ pipeline {
                 }
             }
         }
-
-
-         // stage('Tests') {
-        //     steps{
-        //         dir("./") {
-        //             sh 'npm run test'
-        //         }
-        //     }
-        // }
-        
-        stage('provision server') {
-         
-
-            steps {
-                script {
-                    dir('terraform') {
-                    withAWS(region:"ap-southeast-2", credentials:"TechScrumProjectAWS"){
-                        sh "terraform init"
-                        sh "terraform apply --auto-approve"
-                        s3_bucketname=sh(returnStdout: true, script: "terraform output S3_BucketName").trim()
-                        }
-                    }
-                }
-        
-           }
-        }
     
+// CD
 
-
-
-        // stage("Upload"){
-        //     steps{
-        //         dir("./"){
-        //         withAWS(region:"ap-southeast-2", credentials:"AWS_CREDNETIAL_ID"){
-        //             s3Delete(bucket: "${s3_bucketname}", path:'**/*')
-        //             s3Upload(bucket: "${s3_bucketname}", workingDir:'build', includePathPattern:'**/*');
-        //             }
-        //         } 
-        //     }   
-        // }
+        stage("Upload"){
+            steps{
+                dir("./"){
+                withAWS(region:"ap-southeast-2", credentials:"TechScrumProjectAWS"){
+                    // s3Delete(bucket: "${env.UATS3BucketName}", path:'**/*')
+                    s3Upload(bucket: "${env.UATS3BucketName}", workingDir:'build', includePathPattern:'**/*');
+                    }
+                } 
+            }   
+        }
     }
 }

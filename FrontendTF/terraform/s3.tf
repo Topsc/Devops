@@ -54,29 +54,29 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 
 
 # upload files to s3 bucket
-module "template_files" {
-  source = "hashicorp/dir/template"
+# module "template_files" {
+#   source = "hashicorp/dir/template"
 
-  base_dir = "../build"
-}
+#   base_dir = "../build"
+# }
 
-resource "aws_s3_bucket_object" "static_files" {
-  for_each = module.template_files.files
+# resource "aws_s3_bucket_object" "static_files" {
+#   for_each = module.template_files.files
 
-  bucket       = aws_s3_bucket.bucket.id
-  key          = each.key
-  content_type = each.value.content_type
+#   bucket       = aws_s3_bucket.bucket.id
+#   key          = each.key
+#   content_type = each.value.content_type
 
-  # The template_files module guarantees that only one of these two attributes
-  # will be set for each file, depending on whether it is an in-memory template
-  # rendering result or a static file on disk.
-  source  = each.value.source_path
-  content = each.value.content
+#   # The template_files module guarantees that only one of these two attributes
+#   # will be set for each file, depending on whether it is an in-memory template
+#   # rendering result or a static file on disk.
+#   source  = each.value.source_path
+#   content = each.value.content
 
-  # Unless the bucket has encryption enabled, the ETag of each object is an
-  # MD5 hash of that object.
-  etag = each.value.digests.md5
-}
+#   # Unless the bucket has encryption enabled, the ETag of each object is an
+#   # MD5 hash of that object.
+#   etag = each.value.digests.md5
+# }
 
 
 # data source to generate bucket policy to let OAI get objects:
