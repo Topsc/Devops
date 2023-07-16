@@ -12,7 +12,7 @@ pipeline {
             steps{
                 // Get source code from a GitHub repository
                 // git@github.com:RayMaAU/openhack-devops-team.git
-                git branch:'feature/ECS-Module-uat', credentialsId:'github-credential', url:'git@github.com:chaolin1984/TechScrumDevOps.git'
+                git branch:'main', credentialsId:'github-credential', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.be.git'
             }
         }
         

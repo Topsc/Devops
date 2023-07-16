@@ -13,9 +13,14 @@ provider "aws" {
 # VPC and Networking
 module "techscrum-vpc-network" {
   source = "./modules/Networking"
-
 }
 
+# ECR
+module "techscrum-ecr" {
+  source = "./modules/ECR"
+}
+
+# ECS
 module "techscrum-ecs" {
   source = "./modules/ECS"
   name="techscrum-uat-ecs"
@@ -26,7 +31,7 @@ module "techscrum-ecs" {
 # Task Definition
 module "techscrumTaskDef" {
   source = "./modules/TaskDefination"
-  image_name = "508023426757.dkr.ecr.ap-southeast-2.amazonaws.com/techscrum-linda:latest"
+  image_name = module.techscrum-ecr.ecr_image_url
 }
 
 # Service
