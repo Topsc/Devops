@@ -1,7 +1,7 @@
 pipeline {
     environment {
     imagename = "techscrumbackend-uat-ecr"
-    ecrurl = "152658500028.dkr.ecr.ap-southeast-2.amazonaws.com/techscrumbackend-uat-ecr"
+    ecrurl = "https://152658500028.dkr.ecr.ap-southeast-2.amazonaws.com/techscrumbackend-uat-ecr"
     ecrcredentials = 'ecr:ap-southeast-2:TechScrumProjectAWS'
     dockerImage = ''
   } 
