@@ -1,0 +1,73 @@
+def s3_bucketname
+pipeline {
+    agent any
+
+    
+
+    stages {
+        stage('Git checkout') {
+            steps{
+                // Get source code from a GitHub repository
+                // git@github.com:RayMaAU/openhack-devops-team.git
+                git branch:'linda-frontend', credentialsId:'github-credential', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
+            
+            }
+        }
+        
+        stage('npm install') {
+            steps{
+                dir("./") {
+                    sh 'yarn install'
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps{
+                dir("./") {
+                    sh 'yarn build'
+                }
+            }
+        }
+
+
+         // stage('Tests') {
+        //     steps{
+        //         dir("./") {
+        //             sh 'npm run test'
+        //         }
+        //     }
+        // }
+        
+        stage('provision server') {
+         
+
+            steps {
+                script {
+                    dir('terraform') {
+                    withAWS(region:"ap-southeast-2", credentials:"TechScrumProjectAWS"){
+                        sh "terraform init"
+                        sh "terraform apply --auto-approve"
+                        s3_bucketname=sh(returnStdout: true, script: "terraform output S3_BucketName").trim()
+                        }
+                    }
+                }
+        
+           }
+        }
+    
+
+
+
+        // stage("Upload"){
+        //     steps{
+        //         dir("./"){
+        //         withAWS(region:"ap-southeast-2", credentials:"AWS_CREDNETIAL_ID"){
+        //             s3Delete(bucket: "${s3_bucketname}", path:'**/*')
+        //             s3Upload(bucket: "${s3_bucketname}", workingDir:'build', includePathPattern:'**/*');
+        //             }
+        //         } 
+        //     }   
+        // }
+    }
+}

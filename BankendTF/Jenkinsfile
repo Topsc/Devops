@@ -1,0 +1,99 @@
+pipeline {
+    environment {
+    imagename = "techscrum-linda"
+    ecrurl = "https://508023426757.dkr.ecr.ap-southeast-2.amazonaws.com"
+    ecrcredentials = 'ecr:ap-southeast-2:AWS_CREDNETIAL_ID'
+    dockerImage = ''
+  } 
+    agent any
+
+    stages {
+        stage('Git checkout') {
+            steps{
+                // Get source code from a GitHub repository
+                // git@github.com:RayMaAU/openhack-devops-team.git
+                git branch:'feature/ECS-Module-uat', credentialsId:'github-credential', url:'git@github.com:chaolin1984/TechScrumDevOps.git'
+            }
+        }
+        
+        stage('npm install') {
+            steps{
+                dir("./") {
+                    sh 'npm install'
+                    sh 'docker builder prune -f'
+                }
+            }
+        }
+        
+        stage('Tests') {
+            steps{
+                dir("./") {
+                    sh 'npm run test'
+                }
+            }
+        }
+    
+        stage('Building image') {
+            steps{
+            script {
+          dockerImage = docker.build imagename
+        }
+      }
+    }
+
+    stage('Push Image') {
+
+      steps{
+        script {
+          docker.withRegistry(ecrurl, ecrcredentials) {     
+            //dockerImage.push("$BUILD_NUMBER")
+             dockerImage.push('latest')
+
+          }
+        }
+      }
+    }
+
+
+    // stage('Delete local images') {
+    //         steps{
+    //             dir("./") {
+    //                 sh 'docker rmi -f $(docker images -aq)'
+    //             }
+    //         }
+    //     }
+
+    stage('Backend deploy') {
+          // environment {
+          //     AWS_ACCESS_KEY_ID = AKIAXMSEOJ3CXI4AP4MX
+          //     AWS_SECRET_ACCESS_KEY = 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
+          // }
+
+          steps {
+              script {
+                  dir('terraform') {
+                      // sh "terraform init"
+                      // sh "terraform apply --auto-approve"
+                      sh "terraform destroy --auto-approve"
+                    }
+              }
+   
+           }
+        }
+    }
+    // stage('Publish to AWS EC2') {
+    //         steps{
+    //             script {
+
+    //               def dockerRun = "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 508023426757.dkr.ecr.ap-southeast-2.amazonaws.com && \
+    //                     docker pull 508023426757.dkr.ecr.ap-southeast-2.amazonaws.com/techscrum-linda:latest && \
+    //                     docker run -d --rm -p 8000:8000 508023426757.dkr.ecr.ap-southeast-2.amazonaws.com/techscrum-linda "
+    //                  sshagent(credentials : ['techscrum-ec2']) {
+    //                     sh "echo pwd"
+    //                     sh "ssh ubuntu@13.210.229.250 -o StrictHostKeyChecking=no '${dockerRun}'"
+    //                 }
+    //              }
+    //         }
+    //     }
+    // }
+}
