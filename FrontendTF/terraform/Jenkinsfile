@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+    stages {
+        stage('provision server') {
+         
+            steps {
+                script {
+                    dir('terraform') {
+                    withAWS(region:"ap-southeast-2", credentials:"TechScrumProjectAWS"){
+                        sh "terraform init"
+                        sh "terraform apply --auto-approve"
+                        env.UAT-S3-Bucket-Name=sh(returnStdout: true, script: "terraform output S3_BucketName").trim()
+                        }
+                    }
+                }
+        
+           }
+        }
+
+    }
+}

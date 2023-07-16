@@ -9,7 +9,7 @@ pipeline {
             steps{
                 // Get source code from a GitHub repository
                 // git@github.com:RayMaAU/openhack-devops-team.git
-                git branch:'linda-frontend', credentialsId:'github-credential', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
+                git branch:'main', credentialsId:'github-credential', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
             
             }
         }
