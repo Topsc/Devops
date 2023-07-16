@@ -1,8 +1,8 @@
 pipeline {
     environment {
-    imagename = "techscrum-linda"
-    ecrurl = "https://508023426757.dkr.ecr.ap-southeast-2.amazonaws.com"
-    ecrcredentials = 'ecr:ap-southeast-2:AWS_CREDNETIAL_ID'
+    imagename = "techscrumbackend-uat-ecr"
+    ecrurl = "152658500028.dkr.ecr.ap-southeast-2.amazonaws.com/techscrumbackend-uat-ecr"
+    ecrcredentials = 'ecr:ap-southeast-2:TechScrumProjectAWS'
     dockerImage = ''
   } 
     agent any
@@ -11,7 +11,6 @@ pipeline {
         stage('Git checkout') {
             steps{
                 // Get source code from a GitHub repository
-                // git@github.com:RayMaAU/openhack-devops-team.git
                 git branch:'main', credentialsId:'github-credential', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.be.git'
             }
         }
@@ -54,33 +53,9 @@ pipeline {
       }
     }
 
-
-    // stage('Delete local images') {
-    //         steps{
-    //             dir("./") {
-    //                 sh 'docker rmi -f $(docker images -aq)'
-    //             }
-    //         }
-    //     }
-
-    stage('Backend deploy') {
-          // environment {
-          //     AWS_ACCESS_KEY_ID = AKIAXMSEOJ3CXI4AP4MX
-          //     AWS_SECRET_ACCESS_KEY = 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
-          // }
-
-          steps {
-              script {
-                  dir('terraform') {
-                      // sh "terraform init"
-                      // sh "terraform apply --auto-approve"
-                      sh "terraform destroy --auto-approve"
-                    }
-              }
-   
-           }
-        }
-    }
+  }
+}
+  
     // stage('Publish to AWS EC2') {
     //         steps{
     //             script {
@@ -96,4 +71,3 @@ pipeline {
     //         }
     //     }
     // }
-}
