@@ -39,8 +39,8 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
   network_mode             = "awsvpc"
   memory                   = "512"
   cpu                      = "256"
-  execution_role_arn       = "arn:aws:iam::508023426757:role/ecsTaskExecutionRole"
-  task_role_arn            = "arn:aws:iam::508023426757:role/ecsTaskExecutionRole"
+  execution_role_arn       = "arn:aws:iam::152658500028:role/ecsTaskExecutionRole"
+  task_role_arn            = "arn:aws:iam::152658500028:role/ecsTaskExecutionRole"
 
   tags = {
     Name        = "${var.app_name}-ecs-td"
