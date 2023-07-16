@@ -5,7 +5,7 @@ pipeline {
          
             steps {
                 script {
-                    dir('terraform') {
+                    dir('./FrontendTF/terraform') {
                     withAWS(region:"ap-southeast-2", credentials:"TechScrumProjectAWS"){
                         sh "terraform init"
                         sh "terraform apply --auto-approve"
