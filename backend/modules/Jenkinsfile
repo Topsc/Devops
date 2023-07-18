@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'techscrum'
+        ECR_REGISTRY = '152658500028.dkr.ecr.ap-southeast-2.amazonaws.com'
+        ECR_REPOSITORY = 'techscrum-ecr-repo'
+        AWS_REGION = 'ap-southeast-2'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git(branch: 'main', credentialsId: 'githubsshway', url: 'git@github.com:DevOpsTechscrum/DevOps-Techscrum.be.git')
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Push to AWS ECR') {
+            steps {
+                script {
+                    // Login to ECR
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
+
+                    // Tag Docker image
+                    sh "docker tag ${DOCKER_IMAGE}:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+
+                    // Push Docker image to AWS ECR
+                    sh "docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+                }
+            }
+        }
+    }
+}

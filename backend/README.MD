@@ -1,0 +1,1 @@
+If you use aws credentials file local, you can change the path of shared_credentials_file, and profile(single account set as default or delete profile line, muti-account change the "secondaccount to your profile name"). If you use access key value, you need to add the value.
