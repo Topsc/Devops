@@ -35,3 +35,28 @@ variable "app_environment" {
   type        = string
   description = "Application Environment"
 }
+
+
+variable "sns_name" {
+  description = "sns name"
+  type        = string
+  default     = "backend-sns"
+}
+
+variable "sns_email" {
+  description = "sns email"
+  type        = string
+  default = "chaolin1984@gmail.com"
+}
+
+variable "ecs_cluster_name" {
+  description = "ecs cluster name"
+  type        = string
+  default     = "mytechscrum-cluster"
+}
+
+variable "ecs_service_name" {
+  description = "ecs service name"
+  type        = string
+  default     = "mytechscrum-service"
+}
