@@ -1,54 +1,41 @@
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  # default     = "ap-southeast-2"
 }
 
-variable "vpc_name" {
-  description = "name of vpc"
+variable "vpc_cidr_block" {
   type        = string
-  # default     = "mytechscrum-VPC"
+  description = "cidr block  of vpc"
 }
 
-variable "public_subnet_name" {
-  description = "name of public subnet"
-  type        = string
-   #default     = "public_subnet"
+
+variable "public_subnets" {
+  type        = list(string) 
+  description = "List of public subnets"
 }
 
-variable "private_subnet_name" {
-  description = "name of private subnet"
-  type        = string
-  #default     = "private_subnet"
+variable "private_subnets" {
+  type        = list(string) 
+  description = "List of private subnets"
 }
 
-variable "cidr_block_number" {
-  description = "first number of cidr block"
-  type        = string
-  #default     = "11"
+variable "availability_zones" {
+  type        = list(string) 
+  description = "List of availability zones"
 }
-variable "internet_gateway_name" {
-  description = "internet gateway name"
+
+variable "app_name" {
   type        = string
-  #default     = "mytechscrum-igw"
+  description = "Application Name"
 }
-variable "public_route_table_name" {
-  description = "public route table name"
+
+variable "app_environment_uat" {
   type        = string
-  #default     = "public_route_table"
+  description = "Application Environment"
 }
-variable "private_route_table_name" {
-  description = "private route table name"
+
+variable "app_environment_prod" {
   type        = string
-  #default     = "private_route_table"
+  description = "Application Environment"
 }
-variable "nat_eip_name" {
-  description = "nat eip name"
-  type        = string
-  #default     = "nat_eip"
-}
-variable "nat_gateway_name" {
-  description = "nat gateway name"
-  type        = string
-  #default     = "nat_gateway"
-}
+

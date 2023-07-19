@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "repository" {
-  name                 = var.ecr_repo
+  name                 = "${var.app_name}-ecr-repo"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -20,7 +20,7 @@ resource "aws_ecr_lifecycle_policy" "lifecycle_policy" {
       selection     = {
         tagStatus   = "any"
         countType   = "imageCountMoreThan"
-        countNumber = 5
+        countNumber = var.ecr_images_number
       }
     }]
   })

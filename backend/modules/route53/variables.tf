@@ -8,16 +8,6 @@ variable "alb_zone_id" {
   type        = string
 }
 
-variable "UAT_domain_name" {
-  description = "UAT domain name"
-  type        = string
-}
-
-variable "PROD_domain_name" {
-  description = "PROD domain name"
-  type        = string
-}
-
 variable "domain_name" {
   description = "domain name"
   type        = string

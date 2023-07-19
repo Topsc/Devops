@@ -4,71 +4,47 @@ variable "aws_region" {
   default     = "ap-southeast-2"
 }
 
-variable "vpc_name" {
-  description = "name of vpc"
+variable "vpc_cidr_block" {
+  description = "cidr block  of vpc"
   type        = string
-  default     = "techscrum-VPC"
+  default     = "11.0.0.0/16"
 }
 
-variable "public_subnet_name" {
-  description = "name of public subnet"
-  type        = string
-  default     = "public_subnet"
+
+variable "public_subnets" {
+  type        = list(string)
+  description = "List of public subnets"
+  default     = ["11.0.0.0/20", "11.0.16.0/20"]
 }
 
-variable "private_subnet_name" {
-  description = "name of private subnet"
-  type        = string
-  default     = "private_subnet"
+variable "private_subnets" {
+  type        = list(string)
+  description = "List of private subnets"
+  default     = ["11.0.128.0/20", "11.0.144.0/20"]
 }
 
-variable "cidr_block_number" {
-  description = "first number of cidr block"
-  type        = string
-  default     = "11"
-}
-variable "internet_gateway_name" {
-  description = "internet gateway name"
-  type        = string
-  default     = "mytechscrum-igw"
-}
-variable "public_route_table_name" {
-  description = "public route table name"
-  type        = string
-  default     = "public_route_table"
-}
-variable "private_route_table_name" {
-  description = "private route table name"
-  type        = string
-  default     = "private_route_table"
-}
-variable "nat_eip_name" {
-  description = "nat eip name"
-  type        = string
-  default     = "nat_eip"
-}
-variable "nat_gateway_name" {
-  description = "nat gateway name"
-  type        = string
-  default     = "nat_gateway"
+variable "availability_zones" {
+  type        = list(string)
+  description = "List of availability zones"
+  default     = ["ap-southeast-2a", "ap-southeast-2b"]
 }
 
-variable "ecr_repo" {
-  description = "ecr repository name"
+variable "app_name" {
   type        = string
-  default     = "techscrum-ecr-repo"
+  description = "Application Name"
+  default     = "techscrum"
 }
 
-variable "alb_name" {
-  description = "alb name"
+variable "app_environment_uat" {
   type        = string
-  default     = "techscrum-alb"
+  description = "Application Environment"
+  default     = "uat"
 }
 
-variable "target_group_name" {
-  description = "target group name"
+variable "app_environment_prod" {
   type        = string
-  default     = "techscrum-tg"
+  description = "Application Environment"
+  default     = "prod"
 }
 
 variable "health_check_path" {
@@ -77,70 +53,39 @@ variable "health_check_path" {
   default     = "/api/v1/healthcheck"
 }
 
-variable "ecs_cluster_name" {
-  description = "ecs cluster name"
-  type        = string
-  default     = "techscrum-cluster"
-}
-
-variable "ecs_task_definition_family" {
-  description = "ecs task definition family"
-  type        = string
-  default     = "techscrum-task"
-}
-
-variable "ecs_service_name" {
-  description = "ecs service name"
-  type        = string
-  default     = "techscrum-service"
-}
-
-variable "alb_security_group_name" {
-  description = "alb security group name"
-  type        = string
-  default     = "alb_sg"
-}
-
-variable "service_security_group_name" {
-  description = "service security group name"
-  type        = string
-  default     = "service_sg"
-}
-
-variable "cloudwatch_log_group_name" {
-  description = "cloudwatch log group name"
-  type        = string
-  default     = "/ecs/service"
-}
-
-variable "UAT_domain_name" {
-  description = "UAT domain name"
-  type        = string
-  default     = "uat.techscrum.jiayuan.click"
-}
-
-variable "PROD_domain_name" {
-  description = "PROD domain name"
-  type        = string
-  default     = "prod.techscrum.jiayuan.click"
-}
-
 variable "port" {
   description = "The starting port for a range of ports"
   type        = number
   default     = 8000
 }
 
+variable "ecr_images_number" {
+  description = "The starting port for a range of ports"
+  type        = number
+  default     = 5
+}
+variable "task_desired_count" {
+  description = "desired count of tasks"
+  type        = number
+  default     = 2
+}
+
+variable "task_min_count" {
+  description = "min count of tasks"
+  type        = number
+  default     = 2
+}
+
+variable "task_max_count" {
+  description = "min count of tasks"
+  type        = number
+  default     = 4
+}
+
 variable "domain_name" {
   description = "domain name"
   type        = string
   default     = "techscrum.jiayuan.click"
-}
-
-variable "sns_name" {
-  description = "sns name"
-  type        = string
-  default     = "backend-sns"
 }
 
 variable "sns_email" {

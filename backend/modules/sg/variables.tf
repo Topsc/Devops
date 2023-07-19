@@ -1,13 +1,8 @@
-variable "alb_security_group_name" {
-  description = "alb security group name"
-  type        = string
-#  default     = "alb_sg"
-}
 
-variable "service_security_group_name" {
-  description = "service security group name"
+variable "app_name" {
   type        = string
-#  default     = "service_sg"
+  description = "Application Name"
+  default     = "techscrum"
 }
 
 variable "vpc_id" {

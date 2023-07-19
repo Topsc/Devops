@@ -1,149 +1,116 @@
 #create a new vpc
 resource "aws_vpc" "my_vpc" {
-  cidr_block       = "${var.cidr_block_number}.0.0.0/16"
+  cidr_block       = var.vpc_cidr_block
   instance_tenancy = "default"
 
   tags = {
-    Name = var.vpc_name
-  }
-}
-#create 2 public subnets and 2 private subnets
-resource "aws_subnet" "public_subnet_a" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "${var.cidr_block_number}.0.0.0/20"
-  availability_zone = "${var.aws_region}a"
-  tags = {
-    Name = "${var.public_subnet_name}_a"
+    Name =  "${var.app_name}-vpc"
+    Environment = var.app_environment_uat
   }
 }
 
-resource "aws_subnet" "public_subnet_b" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "${var.cidr_block_number}.0.16.0/20"
-  availability_zone = "${var.aws_region}b"
-  tags = {
-    Name = "${var.public_subnet_name}_b"
-  }
-}
-
-resource "aws_subnet" "private_subnet_a" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "${var.cidr_block_number}.0.128.0/20"
-  availability_zone = "${var.aws_region}a"
-  tags = {
-    Name = "${var.private_subnet_name}_a"
-  }
-}
-
-
-resource "aws_subnet" "private_subnet_b" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "${var.cidr_block_number}.0.144.0/20"
-  availability_zone = "${var.aws_region}b"
-  tags = {
-    Name = "${var.private_subnet_name}_b"
-  }
-}
-
-#create a internet gateway
-resource "aws_internet_gateway" "my_igw" {
+# aws internet gateway 
+resource "aws_internet_gateway" "techscrum-internet-gateway" {
   vpc_id = aws_vpc.my_vpc.id
   tags = {
-    Name = var.internet_gateway_name
+    Name        = "${var.app_name}-igw"
+    Environment = var.app_environment_uat
   }
 }
 
-#Create a route table for the public subnets and add a route to the internet gateway:
-resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.my_vpc.id
+# aws private sunbet
+resource "aws_subnet" "techscrum-private-subnet" {
+  vpc_id            =  aws_vpc.my_vpc.id
+  count             = length(var.private_subnets)
+  cidr_block        = element(var.private_subnets, count.index)
+  availability_zone = element(var.availability_zones, count.index)
+
   tags = {
-    Name = var.public_route_table_name
+    Name        = "${var.app_name}-private-subnet-${count.index + 1}"
+    Environment = var.app_environment_uat
   }
 }
 
-resource "aws_route" "public_route" {
-  route_table_id         = aws_route_table.public_route_table.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.my_igw.id
-}
+#  aws public subnet
+resource "aws_subnet" "techscrum-public-subnet" {
+  vpc_id                  =  aws_vpc.my_vpc.id
+  cidr_block              = element(var.public_subnets, count.index)
+  availability_zone       = element(var.availability_zones, count.index)
+  count                   = length(var.public_subnets)
+  map_public_ip_on_launch = true
 
-resource "aws_route_table_association" "public_subnet_a_association" {
-  subnet_id      = aws_subnet.public_subnet_a.id
-  route_table_id = aws_route_table.public_route_table.id
-}
-
-resource "aws_route_table_association" "public_subnet_b_association" {
-  subnet_id      = aws_subnet.public_subnet_b.id
-  route_table_id = aws_route_table.public_route_table.id
-}
-
-///if the product stage need to be use
-# #Create route tables for the private subnets:
-
-resource "aws_route_table" "private_route_table_a" {
-  vpc_id = aws_vpc.my_vpc.id
   tags = {
-    Name = "${var.private_route_table_name}_a"
+    Name        = "${var.app_name}-public-subnet-${count.index + 1}"
+    Environment = var.app_environment_uat
   }
 }
 
-resource "aws_route_table" "private_route_table_b" {
-  vpc_id = aws_vpc.my_vpc.id
-  tags = {
-    Name = "${var.private_route_table_name}_b"
-  }
-}
-
-resource "aws_route_table_association" "private_subnet_a_association" {
-  subnet_id      = aws_subnet.private_subnet_a.id
-  route_table_id = aws_route_table.private_route_table_a.id
-}
-
-resource "aws_route_table_association" "private_subnet_b_association" {
-  subnet_id      = aws_subnet.private_subnet_b.id
-  route_table_id = aws_route_table.private_route_table_b.id
-}
-
-#Create a NAT gateway and an elastic IP for each public subnet:
-
-resource "aws_eip" "nat_eip_a" {
+# aws elastic ip address
+resource "aws_eip" "nat_eip" {
   vpc = true
+  count = length(var.public_subnets)
+  
   tags = {
-    Name = "${var.nat_eip_name}-a"
+    Name        = "${var.app_name}-nat-eip-${count.index + 1}"
+    Environment = var.app_environment_prod
+  }
+
+  depends_on = [aws_internet_gateway.techscrum-internet-gateway]
+}
+# aws nat gateway
+resource "aws_nat_gateway" "nat_gateway" {
+  allocation_id = element(aws_eip.nat_eip.*.id, count.index)
+  subnet_id     = element(aws_subnet.techscrum-public-subnet.*.id, count.index)
+  count         = length(var.public_subnets)
+
+  tags = {
+    Name        = "${var.app_name}-nat-gateway-${count.index + 1}"
+    Environment = var.app_environment_prod
+  }
+}
+# aws route table 
+resource "aws_route_table" "techscrum-public-rt" {
+  vpc_id = aws_vpc.my_vpc.id
+
+  tags = {
+    Name        = "${var.app_name}-routing-table-public"
+    Environment = var.app_environment_uat
   }
 }
 
-resource "aws_eip" "nat_eip_b" {
-  vpc = true
-  tags = {
-    Name = "${var.nat_eip_name}-b"
-  }
-}
-
-resource "aws_nat_gateway" "nat_gateway_a" {
-  allocation_id = aws_eip.nat_eip_a.id
-  subnet_id     = aws_subnet.public_subnet_a.id
-  tags = {
-    Name = "${var.nat_gateway_name}_a"
-  }
-}
-
-resource "aws_nat_gateway" "nat_gateway_b" {
-  allocation_id = aws_eip.nat_eip_b.id
-  subnet_id     = aws_subnet.public_subnet_b.id
-  tags = {
-    Name = "${var.nat_gateway_name}_b"
-  }
-}
-
-resource "aws_route" "private_subnet_a_route" {
-  route_table_id         = aws_route_table.private_route_table_a.id
+# aws route for public subnet
+resource "aws_route" "techscrum-public" {
+  route_table_id         = aws_route_table.techscrum-public-rt.id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat_gateway_a.id
+  gateway_id             = aws_internet_gateway.techscrum-internet-gateway.id
 }
 
-resource "aws_route" "private_subnet_b_route" {
-  route_table_id         = aws_route_table.private_route_table_b.id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat_gateway_b.id
+# aws public route table association
+resource "aws_route_table_association" "public" {
+  count          = length(var.public_subnets)
+  subnet_id      = element(aws_subnet.techscrum-public-subnet.*.id, count.index)
+  route_table_id = aws_route_table.techscrum-public-rt.id
+}
+
+# aws route table for private subnet
+resource "aws_route_table" "techscrum-private-rt" {
+  vpc_id = aws_vpc.my_vpc.id
+  count  = length(var.private_subnets)
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = element(aws_nat_gateway.nat_gateway.*.id, count.index)
+  }
+
+  tags = {
+    Name        = "${var.app_name}-routing-table-private-${count.index + 1}"
+    Environment = var.app_environment_prod
+  }
+}
+
+# aws private route table association
+resource "aws_route_table_association" "private" {
+  count          = length(var.private_subnets)
+  subnet_id      = element(aws_subnet.techscrum-private-subnet.*.id, count.index)
+  route_table_id = element(aws_route_table.techscrum-private-rt.*.id, count.index)
 }

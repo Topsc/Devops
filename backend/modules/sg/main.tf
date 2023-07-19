@@ -1,6 +1,6 @@
 ///create a security group for  ALB
 resource "aws_security_group" "alb_sg" {
-  name        = var.alb_security_group_name
+  name        = "${var.app_name}-alb-security-group"
   description = "Allow inbound traffic"
   vpc_id      = var.vpc_id
 
@@ -26,13 +26,13 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name = var.alb_security_group_name
+    Name = "${var.app_name}-alb-security-group"
   }
 }
 
 ///create a security group for service
 resource "aws_security_group" "service_sg" {
-  name        = var.service_security_group_name
+  name        = "${var.app_name}-service-security-group"
   description = "Allow inbound traffic on port 8000"
   vpc_id      = var.vpc_id
 
@@ -52,6 +52,6 @@ resource "aws_security_group" "service_sg" {
   }
 
   tags = {
-    Name = var.service_security_group_name
+    Name = "${var.app_name}-service-security-group"
   }
 }

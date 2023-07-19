@@ -1,43 +1,46 @@
-variable "ecs_cluster_name" {
-  description = "ecs cluster name"
+variable "app_name" {
   type        = string
-  # default     = "mytechscrum-cluster"
+  description = "Application Name"
 }
 
-variable "ecs_task_definition_family" {
-  description = "ecs task definition family"
+variable "app_environment_uat" {
   type        = string
-  # default     = "mytechscrum-task"
-}
-variable "cloudwatch_log_group_name" {
-  description = "cloudwatch log group name"
-  type        = string
-  # default     = "/ecs/service"
-}
-variable "ecs_service_name" {
-  description = "ecs service name"
-  type        = string
-  # default     = "mytechscrum-service"
+  description = "Application Environment"
 }
 
-variable "public_subnets_a_id" {
-  description = "public subnets a id"
+variable "app_environment_prod" {
   type        = string
+  description = "Application Environment"
 }
 
-variable "public_subnets_b_id" {
-  description = "public subnets b id"
-  type        = string
+variable "public_subnet_ids" {
+  description = "List of IDs of public subnets"
+  type        = list(string)
 }
 
-variable "private_subnets_a_id" {
-  description = "private subnets a id"
-  type        = string
+variable "task_desired_count" {
+  description = "desired count of tasks"
+  type        = number
 }
 
-variable "private_subnets_b_id" {
-  description = "private subnets b id"
-  type        = string
+variable "task_min_count" {
+  description = "min count of tasks"
+  type        = number
+}
+
+variable "task_max_count" {
+  description = "min count of tasks"
+  type        = number
+}
+
+variable "port" {
+  description = "The starting port for a range of ports"
+  type        = number
+}
+
+variable "private_subnet_ids" {
+  description = "List of IDs of private subnets"
+  type        = list(string)
 }
 
 variable "service_sg_id" {
@@ -49,7 +52,6 @@ variable "repository_url" {
   description = "image repository url"
   type        = string
 }
-
 
 variable "tg_uat_arn" {
   description = "tg uat arn"

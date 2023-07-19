@@ -1,11 +1,19 @@
-variable "alb_name" {
-  description = "alb name"
+variable "app_name" {
   type        = string
+  description = "Application Name"
+  default     = "techscrum"
 }
 
-variable "target_group_name" {
-  description = "target group name"
+variable "app_environment_uat" {
   type        = string
+  description = "Application Environment"
+  default     = "uat"
+}
+
+variable "app_environment_prod" {
+  type        = string
+  description = "Application Environment"
+  default     = "prod"
 }
 
 variable "health_check_path" {
@@ -23,22 +31,12 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "public_subnets_a_id" {
-  description = "public subnets a id"
-  type        = string
+variable "public_subnet_ids" {
+  description = "List of IDs of public subnets"
+  type        = list(string)
 }
 
-variable "public_subnets_b_id" {
-  description = "public subnets b id"
-  type        = string
-}
-
-variable "UAT_domain_name" {
-  description = "UAT domain name"
-  type        = string
-}
-
-variable "PROD_domain_name" {
-  description = "PROD domain name"
+variable "domain_name" {
+  description = "domain name"
   type        = string
 }

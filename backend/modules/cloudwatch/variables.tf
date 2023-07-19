@@ -1,10 +1,5 @@
-variable "alb_name" {
-  description = "alb name"
-  type        = string
-}
-
-variable "sns_name" {
-  description = "sns name"
+variable "app_name" {
+  description = "application name"
   type        = string
 }
 
@@ -13,14 +8,12 @@ variable "sns_email" {
   type        = string
 }
 
-variable "ecs_cluster_name" {
-  description = "ecs cluster name"
+variable "app_environment_uat" {
   type        = string
-  default     = "mytechscrum-cluster"
+  description = "Application Environment"
 }
 
-variable "ecs_service_name" {
-  description = "ecs service name"
+variable "app_environment_prod" {
   type        = string
-  default     = "mytechscrum-service"
+  description = "Application Environment"
 }

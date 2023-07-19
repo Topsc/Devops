@@ -12,10 +12,10 @@ resource "aws_cloudwatch_dashboard" "ecs_dashboard" {
       "height": 6,
       "properties": {
         "metrics": [
-          [ "AWS/ECS", "CPUUtilized", "ClusterName", "${var.ecs_cluster_name}-uat", "ServiceName", "${var.ecs_service_name}-uat" ],
-          [ "AWS/ECS", "CPUUtilized", "ClusterName", "${var.ecs_cluster_name}-prod", "ServiceName", "${var.ecs_service_name}-prod" ],
-          [ ".", "MemoryUtilized", ".", "${var.ecs_cluster_name}-uat", ".", "${var.ecs_service_name}-uat" ],
-          [ ".", "MemoryUtilized", ".", "${var.ecs_cluster_name}-prod", ".", "${var.ecs_service_name}-prod" ]
+          [ "AWS/ECS", "CPUUtilized", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_uat}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_uat}" ],
+          [ "AWS/ECS", "CPUUtilized", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_prod}" ],
+          [ ".", "MemoryUtilized", ".", "${var.app_name}-ecs-cluster-${var.app_environment_uat}", ".", "{var.app_name}-ecs-service-${var.app_environment_uat}" ],
+          [ ".", "MemoryUtilized", ".", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", ".", "${var.app_name}-ecs-service-${var.app_environment_prod}" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -42,7 +42,7 @@ resource "aws_cloudwatch_dashboard" "alb_dashboard" {
       "height": 6,
       "properties": {
         "metrics": [
-          [ "AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", "${var.alb_name}" ],
+          [ "AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", "${var.app_name}-alb" ],
           [ ".", "HTTPCode_Target_5XX_Count", ".", "." ]
         ],
         "view": "timeSeries",
@@ -59,7 +59,7 @@ resource "aws_cloudwatch_dashboard" "alb_dashboard" {
       "height": 6,
       "properties": {
         "metrics": [
-          [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${var.alb_name}" ]
+          [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${var.app_name}-alb" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -74,7 +74,7 @@ EOF
 
 ///create sns
 resource "aws_sns_topic" "backend_sns" {
-  name = var.sns_name
+  name = "${var.app_name}-backend-sns"
 }
 
 resource "aws_sns_topic_subscription" "user_updates" {
@@ -96,8 +96,8 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_alarm" {
   alarm_description   = "This metric checks cpu utilization"
   alarm_actions       = [aws_sns_topic.backend_sns.arn]
   dimensions = {
-    ClusterName = "${var.ecs_cluster_name}-prod"
-    ServiceName = "${var.ecs_service_name}-prod"
+    ClusterName = "${var.app_name}-ecs-cluster-${var.app_environment_prod}"
+    ServiceName = "${var.app_name}-ecs-service-${var.app_environment_prod}"
   }
 }
 
@@ -113,8 +113,8 @@ resource "aws_cloudwatch_metric_alarm" "ecs_memory_alarm_uat" {
   alarm_description   = "This metric checks memory utilization"
   alarm_actions       = [aws_sns_topic.backend_sns.arn]
   dimensions = {
-    ClusterName = "${var.ecs_cluster_name}-uat"
-    ServiceName = "${var.ecs_service_name}-uat"
+    ClusterName = "${var.app_name}-ecs-cluster-${var.app_environment_uat}"
+    ServiceName = "${var.app_name}-ecs-service-${var.app_environment_uat}"
   }
 }
 
@@ -130,8 +130,8 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_alarm_uat" {
   alarm_description   = "This metric checks cpu utilization"
   alarm_actions       = [aws_sns_topic.backend_sns.arn]
   dimensions = {
-    ClusterName = "${var.ecs_cluster_name}-uat"
-    ServiceName = "${var.ecs_service_name}-uat"
+    ClusterName = "${var.app_name}-ecs-cluster-${var.app_environment_uat}"
+    ServiceName = "${var.app_name}-ecs-service-${var.app_environment_uat}"
   }
 }
 
@@ -147,8 +147,8 @@ resource "aws_cloudwatch_metric_alarm" "ecs_memory_alarm_prod" {
   alarm_description   = "This metric checks memory utilization"
   alarm_actions       = [aws_sns_topic.backend_sns.arn]
   dimensions = {
-    ClusterName = "${var.ecs_cluster_name}-prod"
-    ServiceName = "${var.ecs_service_name}-prod"
+    ClusterName = "${var.app_name}-ecs-cluster-${var.app_environment_prod}"
+    ServiceName = "${var.app_name}-ecs-service-${var.app_environment_prod}"
   }
 }
 
@@ -165,7 +165,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_4xx_alarm" {
   alarm_description   = "This metric checks for 4xx errors"
   alarm_actions       = [aws_sns_topic.backend_sns.arn]
   dimensions = {
-    LoadBalancer = "${var.alb_name}"
+    LoadBalancer = "${var.app_name}-alb"
   }
 }
 
@@ -181,7 +181,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx_alarm" {
   alarm_description   = "This metric checks for 5xx errors"
   alarm_actions       = [aws_sns_topic.backend_sns.arn]
   dimensions = {
-    LoadBalancer = "${var.alb_name}"
+    LoadBalancer = "${var.app_name}-alb"
   }
 }
 
@@ -197,6 +197,6 @@ resource "aws_cloudwatch_metric_alarm" "alb_response_time_alarm" {
   alarm_description   = "This metric checks response time"
   alarm_actions       = [aws_sns_topic.backend_sns.arn]
   dimensions = {
-    LoadBalancer = "${var.alb_name}"
+    LoadBalancer = "${var.app_name}-alb"
   }
 }
