@@ -1,16 +1,16 @@
 terraform {
-  # backend "local" {
+  backend "local" {
 
-  # }
-  backend "s3" {
-    bucket = "techscrum-tfstate-bucket"
-    key    = "frontend-tfstate/terraform.tfstate"
-    region = "ap-southeast-2"
-
-    # Enable during Step-09     
-    # For State Locking
-    dynamodb_table = "techscrum-lock-table"
   }
+  # backend "s3" {
+  #   bucket = "techscrum-tfstate-bucket"
+  #   key    = "frontend-tfstate/terraform.tfstate"
+  #   region = "ap-southeast-2"
+
+  #   # Enable during Step-09     
+  #   # For State Locking
+  #   dynamodb_table = "techscrum-lock-table"
+  # }
 }
 
 
