@@ -12,7 +12,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git(branch: 'main', credentialsId: 'githubsshway', url: 'git@github.com:DevOpsTechscrum/DevOps-Techscrum.be.git')
+                git(branch: 'main', credentialsId: 'jenkins_node', url: 'git@github.com:DevOpsTechscrum/DevOps-Techscrum.be.git')
             }
         }
         stage('Build Docker Image') {
