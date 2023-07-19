@@ -9,7 +9,7 @@ pipeline {
             steps{
                 // Get source code from a GitHub repository
                 
-                git branch:'main', credentialsId:'github-credential', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
+                git branch:'main', credentialsId:'jenkins_node', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
             
             }
         }
@@ -35,7 +35,7 @@ pipeline {
         stage("Upload"){
             steps{
                 dir("./"){
-                withAWS(region:"ap-southeast-2", credentials:"TechScrumProjectAWS"){
+                withAWS(region:"ap-southeast-2", credentials:"jenkins_aws"){
                     // s3Delete(bucket: "${env.UATS3BucketName}", path:'**/*')
                     s3Upload(bucket: "techscrum-linda-frontend", workingDir:'build', includePathPattern:'**/*');
                     }
