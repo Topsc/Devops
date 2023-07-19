@@ -32,20 +32,10 @@ resource "aws_route53_record" "certvalidation" {
   type            = each.value.type
   zone_id         = data.aws_route53_zone.hosted_zone.zone_id
 }
+
 resource "aws_acm_certificate_validation" "certvalidation" {
   certificate_arn         = aws_acm_certificate.cert.arn
   provider = aws.us-east-1
   validation_record_fqdns = [for r in aws_route53_record.certvalidation : r.fqdn]
 }
 
-# creating A record for domain:
-resource "aws_route53_record" "websiteurl" {
-  name    = var.domain_name
-  zone_id = data.aws_route53_zone.hosted_zone.zone_id
-  type    = "A"
-  alias {
-    name                   = aws_cloudfront_distribution.cf_dist.domain_name
-    zone_id                = aws_cloudfront_distribution.cf_dist.hosted_zone_id
-    evaluate_target_health = true
-  }
-}
