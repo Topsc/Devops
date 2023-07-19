@@ -7,7 +7,7 @@ pipeline {
                 script {
                     dir('./FrontendTF/terraform') {
                     withAWS(region:"ap-southeast-2", credentials:"TechScrumProjectAWS"){
-                        sh "terraform init"
+                        sh "terraform init -reconfigure"
                         sh "terraform apply --auto-approve"
                         env.UATS3BucketName=sh(returnStdout: true, script: "terraform output S3_BucketName").trim()
                         }
