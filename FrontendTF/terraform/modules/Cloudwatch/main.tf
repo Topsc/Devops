@@ -1,7 +1,7 @@
 
 resource "aws_cloudwatch_dashboard" "techscrum-cloudwatch-dashboard" {
   dashboard_name = var.dashboard_name
-  provider = aws.us-east-1
+  
    dashboard_body = <<EOF
 {
 "widgets": [
@@ -66,7 +66,7 @@ resource "aws_cloudwatch_dashboard" "techscrum-cloudwatch-dashboard" {
             "Region",
             "Global",
             "DistributionId",
-            "${aws_cloudfront_distribution.cf_dist.id}"
+            "${var.cloudfront-input.id}"
           ],
           [
             "AWS/CloudFront",
@@ -74,7 +74,7 @@ resource "aws_cloudwatch_dashboard" "techscrum-cloudwatch-dashboard" {
             "Region",
             "Global",
             "DistributionId",
-            "${aws_cloudfront_distribution.cf_dist.id}"
+            "${var.cloudfront-input.id}"
           ]
         ],
         "region": "us-east-1",
@@ -90,14 +90,15 @@ EOF
 }
 
 
+
 ///create sns
 resource "aws_sns_topic" "my_sns" {
-  provider = aws.us-east-1
+ 
   name     = "my_sns"
 }
 
 resource "aws_sns_topic_subscription" "user_updates" {
-  provider  = aws.us-east-1
+ 
   topic_arn = aws_sns_topic.my_sns.arn
   protocol  = "email"
   endpoint  = "chaolin1984@gmail.com"
@@ -107,7 +108,7 @@ resource "aws_sns_topic_subscription" "user_updates" {
 
 ///create alarm and sns
 resource "aws_cloudwatch_metric_alarm" "data_transfer_alarm" {
-  provider            = aws.us-east-1
+
   alarm_name          = var.data_transfer_alarm_name
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
@@ -120,12 +121,12 @@ resource "aws_cloudwatch_metric_alarm" "data_transfer_alarm" {
   alarm_actions       = [aws_sns_topic.my_sns.arn]
   dimensions = {
     Region         = "Global"
-    DistributionId = aws_cloudfront_distribution.cf_dist.id
+    DistributionId = var.cloudfront-input.id
   }
 }
 
 resource "aws_cloudwatch_metric_alarm" "error_rate_alarm" {
-  provider            = aws.us-east-1
+
   alarm_name          = var.error_rate_alarm_name
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
@@ -138,7 +139,7 @@ resource "aws_cloudwatch_metric_alarm" "error_rate_alarm" {
   alarm_actions       = [aws_sns_topic.my_sns.arn]
   dimensions = {
     Region         = "Global"
-    DistributionId = aws_cloudfront_distribution.cf_dist.id
+    DistributionId = var.cloudfront-input.id
   }
 }
 
@@ -146,7 +147,7 @@ resource "aws_cloudwatch_metric_alarm" "error_rate_alarm" {
 
 
 resource "aws_cloudwatch_metric_alarm" "https_health_check_alarm" {
-  provider            = aws.us-east-1
+ 
   alarm_name          = var.https_health_check_alarm_name
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "2"
@@ -165,7 +166,7 @@ resource "aws_cloudwatch_metric_alarm" "https_health_check_alarm" {
 
 
 resource "aws_cloudwatch_metric_alarm" "http_health_check_alarm" {
-  provider            = aws.us-east-1
+ 
   alarm_name          = var.http_health_check_alarm_name
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "2"
@@ -180,3 +181,34 @@ resource "aws_cloudwatch_metric_alarm" "http_health_check_alarm" {
     HealthCheckId = aws_route53_health_check.health_check_http.id
   }
 }
+
+
+# http healthcheck
+resource "aws_route53_health_check" "health_check_http" {
+  # provider          = aws.us-east-1
+  fqdn              = var.domain_name
+  port              = 80
+  type              = "HTTP"
+  request_interval  = 30
+  failure_threshold = 3
+  tags = {
+    Name = var.http_health_check_name
+  }
+}
+
+
+
+#https healthcheck
+resource "aws_route53_health_check" "health_check_https" {
+  # provider          = aws.us-east-1
+  fqdn              = var.domain_name
+  port              = 443
+  type              = "HTTPS"
+  request_interval  = 30
+  failure_threshold = 3
+  tags = {
+    Name = var.https_health_check_name
+  }
+}
+
+

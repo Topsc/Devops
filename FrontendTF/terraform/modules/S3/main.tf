@@ -7,7 +7,27 @@ resource "aws_s3_bucket" "bucket" {
     "ManagedBy" = "Terraform"
   }
   force_destroy = true
+   # main bucket log setting
+   logging {
+    target_bucket = aws_s3_bucket.logging_bucket.id
+    target_prefix = "s3-"
+  }
 }
+
+
+# create S3 bucket for logging bucket
+resource "aws_s3_bucket" "logging_bucket" {
+  bucket = "${var.bucket_name}-logs"
+  acl    = "private"
+
+  lifecycle_rule {
+    enabled = true
+    expiration {
+      days = 30
+    }
+  }
+}
+
 
 # Resource to avoid error "AccessControlListNotSupported: The bucket does not allow ACLs"
 resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership" {
@@ -53,31 +73,6 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 }
 
 
-# upload files to s3 bucket
-# module "template_files" {
-#   source = "hashicorp/dir/template"
-
-#   base_dir = "../build"
-# }
-
-# resource "aws_s3_bucket_object" "static_files" {
-#   for_each = module.template_files.files
-
-#   bucket       = aws_s3_bucket.bucket.id
-#   key          = each.key
-#   content_type = each.value.content_type
-
-#   # The template_files module guarantees that only one of these two attributes
-#   # will be set for each file, depending on whether it is an in-memory template
-#   # rendering result or a static file on disk.
-#   source  = each.value.source_path
-#   content = each.value.content
-
-#   # Unless the bucket has encryption enabled, the ETag of each object is an
-#   # MD5 hash of that object.
-#   etag = each.value.digests.md5
-# }
-
 
 # data source to generate bucket policy to let OAI get objects:
 data "aws_iam_policy_document" "bucket_policy_document" {
@@ -89,7 +84,7 @@ data "aws_iam_policy_document" "bucket_policy_document" {
     ]
     principals {
       type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.oai.iam_arn]
+      identifiers = [var.oai-iam-arn]
     }
   }
 }

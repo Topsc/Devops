@@ -1,21 +1,17 @@
 
-# data source to fetch hosted zone info from domain name:
-data "aws_route53_zone" "hosted_zone" {
-  name = var.domain_name
-}
-
-
 # generate ACM cert for domain :
 resource "aws_acm_certificate" "cert" {
   domain_name               = var.domain_name
   subject_alternative_names = ["*.${var.domain_name}"]
   validation_method         = "DNS"
-  provider = aws.us-east-1
+  # provider = var.aws_provider
   tags = {
     "Project"   = "techscrum-dev.lindalu.click"
     "ManagedBy" = "Terraform"
   }
 }
+
+
 # validate cert:
 resource "aws_route53_record" "certvalidation" {
   for_each = {
@@ -35,7 +31,12 @@ resource "aws_route53_record" "certvalidation" {
 
 resource "aws_acm_certificate_validation" "certvalidation" {
   certificate_arn         = aws_acm_certificate.cert.arn
-  provider = aws.us-east-1
+  # provider = aws.us-east-1
   validation_record_fqdns = [for r in aws_route53_record.certvalidation : r.fqdn]
+}
+
+# data source to fetch hosted zone info from domain name:
+data "aws_route53_zone" "hosted_zone" {
+  name = var.domain_name
 }
 
