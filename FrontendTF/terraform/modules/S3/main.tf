@@ -8,10 +8,10 @@ resource "aws_s3_bucket" "bucket" {
   }
   force_destroy = true
    # main bucket log setting
-  #  logging {
-  #   target_bucket = aws_s3_bucket.logging_bucket.id
-  #   target_prefix = "s3-"
-  # }
+   logging {
+    target_bucket = aws_s3_bucket.logging_bucket.id
+    target_prefix = "techscrum-s3-log/"
+  }
 }
 
 
@@ -28,12 +28,12 @@ resource "aws_s3_bucket" "logging_bucket" {
   }
 }
 
-resource "aws_s3_bucket_logging" "s3_logging" {
-  bucket = aws_s3_bucket.bucket.id
+# resource "aws_s3_bucket_logging" "s3_logging" {
+#   bucket = aws_s3_bucket.bucket.id
 
-  target_bucket = aws_s3_bucket.logging_bucket.id
-  target_prefix = "techscrum-s3-log/"
-}
+#   target_bucket = aws_s3_bucket.logging_bucket.id
+#   target_prefix = "techscrum-s3-log/"
+# }
 
 # Resource to avoid error "AccessControlListNotSupported: The bucket does not allow ACLs"
 resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership" {
