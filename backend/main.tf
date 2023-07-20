@@ -13,7 +13,7 @@ provider "aws" {
   profile                 = "secondaccount"
   region                  = var.aws_region
 }
-//if you use your 
+//if you want to use your aws credentials
 # provider "aws" {
 #   region     = var.aws_region
 #   access_key = var.aws_access_key
