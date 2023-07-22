@@ -1,0 +1,13 @@
+# Local .terraform directories
+*.zip
+**/.terraform/*
+*.terraform*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# exclude all .tfvars files
+*.tfvars
+*.tfvars.json
+
