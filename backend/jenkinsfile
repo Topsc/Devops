@@ -25,9 +25,3 @@ pipeline {
 
     }
 }
-stage('Terraform Destroy') {
-  steps {
-    sh 'terraform init' // make sure Terraform is initialized
-    sh 'terraform destroy -auto-approve' // run terraform destroy and auto-approve the operation
-  }
-}
