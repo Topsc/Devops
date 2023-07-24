@@ -173,3 +173,48 @@ resource "aws_route_table_association" "private" {
   subnet_id      = element(aws_subnet.techscrum-private-subnet-prod.*.id, count.index)
   route_table_id = element(aws_route_table.techscrum-prod-private-rt.*.id, count.index)
 }
+
+########################################################################################################
+#                                     Create VPC Peering Connection
+########################################################################################################
+resource "aws_vpc_peering_connection" "vpc_peering" {
+  peer_vpc_id = aws_vpc.vpc_prod.id
+  vpc_id      = aws_vpc.vpc_uat.id
+  auto_accept = false
+
+  tags = {
+    Name = "${var.app_name}-vpc-peering"
+  }
+}
+
+# Accept the VPC Peering Connection on the peer (prod) VPC
+resource "aws_vpc_peering_connection_accepter" "peer_accepter" {
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc_peering.id
+  auto_accept               = true
+
+  tags = {
+    Name = "${var.app_name}-vpc-peering-accepter"
+  }
+}
+
+# Add route to UAT route tables to direct traffic destined for prod VPC 
+resource "aws_route" "peer_route_uat" {
+  route_table_id            = aws_route_table.techscrum-uat-rt.id
+  destination_cidr_block    = aws_vpc.vpc_prod.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc_peering.id
+}
+
+# Add route to Prod public route table to direct traffic destined for uat VPC 
+resource "aws_route" "peer_route_prod_public" {
+  route_table_id            = aws_route_table.techscrum-prod-public-rt.id
+  destination_cidr_block    = aws_vpc.vpc_uat.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc_peering.id
+}
+
+# Add route to Prod private route tables to direct traffic destined for uat VPC 
+resource "aws_route" "peer_route_prod_private" {
+  count                     = length(var.private_subnets_prod)
+  route_table_id            = element(aws_route_table.techscrum-prod-private-rt.*.id, count.index)
+  destination_cidr_block    = aws_vpc.vpc_uat.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc_peering.id
+}
