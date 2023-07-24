@@ -26,12 +26,12 @@ variable "alb_sg_id" {
   type        = string
 }
 
-variable "vpc_id" {
-  description = "vpc id"
+variable "prod_vpc_id" {
+  description = "prod vpc id"
   type        = string
 }
 
-variable "public_subnet_ids" {
+variable "prod_public_subnet_ids" {
   description = "List of IDs of public subnets"
   type        = list(string)
 }

@@ -79,21 +79,21 @@ resource "aws_ecs_service" "service_uat" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = var.public_subnet_ids
+    subnets          = var.uat_public_subnet_ids
     assign_public_ip = true
-    security_groups  = [var.service_sg_id]
+    security_groups  = [var.uat_service_sg_id]
   }
 
-  load_balancer {
-    target_group_arn = var.tg_uat_arn
-    container_name   = "${var.app_name}-container-${var.app_environment_uat}"
-    container_port   = var.port
-  }
+  # load_balancer {
+  #   target_group_arn = var.tg_uat_arn
+  #   container_name   = "${var.app_name}-container-${var.app_environment_uat}"
+  #   container_port   = var.port
+  # }
   tags = {
     Name        = "${var.app_name}-ecs-service-${var.app_environment_uat}"
     Environment = var.app_environment_uat
   }
-  depends_on = [var.listener_arn]
+  # depends_on = [var.listener_arn]
 }
 
 // create prod cluster
@@ -172,9 +172,9 @@ resource "aws_ecs_service" "service_prod" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = var.private_subnet_ids
+    subnets          = var.prod_private_subnet_ids
     assign_public_ip = true
-    security_groups  = [var.service_sg_id]
+    security_groups  = [var.prod_service_sg_id]
   }
 
   load_balancer {

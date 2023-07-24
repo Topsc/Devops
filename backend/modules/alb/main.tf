@@ -3,7 +3,7 @@ resource "aws_lb" "alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.alb_sg_id]
-  subnets            = var.public_subnet_ids
+  subnets            = var.prod_public_subnet_ids
   enable_http2       = true
 
   idle_timeout = 60
@@ -16,28 +16,28 @@ resource "aws_lb" "alb" {
 }
 
 ///create the Target Group:
-resource "aws_lb_target_group" "tg_uat" {
-  name        = "${var.app_name}-target-group-${var.app_environment_uat}"
-  port        = 8000
-  protocol    = "HTTP"
-  vpc_id      = var.vpc_id
-  target_type = "ip"
+# resource "aws_lb_target_group" "tg_uat" {
+#   name        = "${var.app_name}-target-group-${var.app_environment_uat}"
+#   port        = 8000
+#   protocol    = "HTTP"
+#   vpc_id      = var.vpc_id
+#   target_type = "ip"
 
-  health_check {
-    interval            = 200
-    path                = var.health_check_path
-    timeout             = 3
-    healthy_threshold   = 3
-    unhealthy_threshold = 3
-    matcher             = "200"
-  }
-}
+#   health_check {
+#     interval            = 200
+#     path                = var.health_check_path
+#     timeout             = 3
+#     healthy_threshold   = 3
+#     unhealthy_threshold = 3
+#     matcher             = "200"
+#   }
+# }
 
 resource "aws_lb_target_group" "tg_prod" {
   name        = "${var.app_name}-target-group-${var.app_environment_prod}"
   port        = 8000
   protocol    = "HTTP"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.prod_vpc_id
   target_type = "ip"
 
   health_check {
@@ -58,25 +58,25 @@ resource "aws_lb_listener" "listener" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.tg_uat.arn
+    target_group_arn = aws_lb_target_group.tg_prod.arn
   }
 }
 
-resource "aws_lb_listener_rule" "uat" {
-  listener_arn = aws_lb_listener.listener.arn
-  priority     = 100
+# resource "aws_lb_listener_rule" "uat" {
+#   listener_arn = aws_lb_listener.listener.arn
+#   priority     = 100
 
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.tg_uat.arn
-  }
+#   action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.tg_uat.arn
+#   }
 
-  condition {
-    host_header {
-      values = ["uat.${var.domain_name}"]
-    }
-  }
-}
+#   condition {
+#     host_header {
+#       values = ["uat.${var.domain_name}"]
+#     }
+#   }
+# }
 
 resource "aws_lb_listener_rule" "prod" {
   listener_arn = aws_lb_listener.listener.arn

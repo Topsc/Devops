@@ -3,20 +3,29 @@ variable "aws_region" {
   type        = string
 }
 
-variable "vpc_cidr_block" {
+variable "vpc_cidr_block_uat" {
   type        = string
-  description = "cidr block  of vpc"
+  description = "cidr block  of uat vpc"
 }
 
-
-variable "public_subnets" {
-  type        = list(string) 
-  description = "List of public subnets"
+variable "vpc_cidr_block_prod" {
+  type        = string
+  description = "cidr block  of prod vpc"
 }
 
-variable "private_subnets" {
+variable "public_subnets_uat" {
   type        = list(string) 
-  description = "List of private subnets"
+  description = "List of uat public subnets"
+}
+
+variable "public_subnets_prod" {
+  type        = list(string) 
+  description = "List of prod public subnets"
+}
+
+variable "private_subnets_prod" {
+  type        = list(string) 
+  description = "List of prod private subnets"
 }
 
 variable "availability_zones" {

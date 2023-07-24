@@ -4,25 +4,35 @@ variable "aws_region" {
   default     = "ap-southeast-2"
 }
 
-variable "vpc_cidr_block" {
-  description = "cidr block  of vpc"
+variable "vpc_cidr_block_uat" {
   type        = string
+  description = "cidr block  of uat vpc"
   default     = "11.0.0.0/16"
 }
 
+variable "vpc_cidr_block_prod" {
+  type        = string
+  description = "cidr block  of prod vpc"
+  default     = "12.0.0.0/16"
+}
 
-variable "public_subnets" {
+variable "public_subnets_uat" {
   type        = list(string)
-  description = "List of public subnets"
+  description = "List of uat public subnets"
   default     = ["11.0.0.0/20", "11.0.16.0/20"]
 }
 
-variable "private_subnets" {
+variable "public_subnets_prod" {
   type        = list(string)
-  description = "List of private subnets"
-  default     = ["11.0.128.0/20", "11.0.144.0/20"]
+  description = "List of prod public subnets"
+  default     = ["12.0.0.0/20", "12.0.16.0/20"]
 }
 
+variable "private_subnets_prod" {
+  type        = list(string)
+  description = "List of prod private subnets"
+  default     = ["12.0.128.0/20", "12.0.144.0/20"]
+}
 variable "availability_zones" {
   type        = list(string)
   description = "List of availability zones"

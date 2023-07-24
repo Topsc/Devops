@@ -13,8 +13,8 @@ variable "app_environment_prod" {
   description = "Application Environment"
 }
 
-variable "public_subnet_ids" {
-  description = "List of IDs of public subnets"
+variable "uat_public_subnet_ids" {
+  description = "List of IDs of uat public subnets"
   type        = list(string)
 }
 
@@ -38,25 +38,25 @@ variable "port" {
   type        = number
 }
 
-variable "private_subnet_ids" {
-  description = "List of IDs of private subnets"
+variable "prod_private_subnet_ids" {
+  description = "List of IDs of rpod private subnets"
   type        = list(string)
 }
 
-variable "service_sg_id" {
+variable "uat_service_sg_id" {
   description = "service sg id"
   type        = string
 }
 
+variable "prod_service_sg_id" {
+  description = "service sg id"
+  type        = string
+}
 variable "repository_url" {
   description = "image repository url"
   type        = string
 }
 
-variable "tg_uat_arn" {
-  description = "tg uat arn"
-  type        = string
-}
 
 variable "tg_prod_arn" {
   description = "tg prod arn"
@@ -67,3 +67,8 @@ variable "listener_arn" {
   description = "ARN of the listener"
   type        = string
 }
+
+# variable "tg_uat_arn" {
+#   description = "tg uat arn"
+#   type        = string
+# }
