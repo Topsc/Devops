@@ -12,22 +12,36 @@ resource "aws_cloudwatch_dashboard" "ecs_dashboard" {
       "height": 6,
       "properties": {
         "metrics": [
-          [ "AWS/ECS", "CPUUtilized", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_uat}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_uat}" ],
-          [ "AWS/ECS", "CPUUtilized", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_prod}" ],
-          [ ".", "MemoryUtilized", ".", "${var.app_name}-ecs-cluster-${var.app_environment_uat}", ".", "{var.app_name}-ecs-service-${var.app_environment_uat}" ],
-          [ ".", "MemoryUtilized", ".", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", ".", "${var.app_name}-ecs-service-${var.app_environment_prod}" ]
+          [ "ECS/ContainerInsights", "CpuUtilized", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_uat}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_uat}" ],
+          [ "ECS/ContainerInsights", "CpuUtilized", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_prod}" ]
         ],
         "view": "timeSeries",
         "stacked": false,
         "region": "ap-southeast-2",
-        "title": "ECS Service - CPU and Memory Utilization"
+        "title": "ECS Service - CPU Utilization"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 13,
+      "y": 0, 
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "ECS/ContainerInsights", "MemoryUtilized", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_uat}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_uat}" ],
+          [ "ECS/ContainerInsights", "MemoryUtilized", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_prod}" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-southeast-2",
+        "title": "ECS Service - Memory Utilization"
       }
     }
   ]
 }
 EOF
 }
-
 resource "aws_cloudwatch_dashboard" "alb_dashboard" {
   dashboard_name = "ALB-Dashboard"
 
