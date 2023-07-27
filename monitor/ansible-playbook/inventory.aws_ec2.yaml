@@ -1,0 +1,11 @@
+---
+filters:
+  tag:Project: techscrum
+keyed_groups:
+  - key: tags['Name']
+    prefix: tag
+plugin: aws_ec2
+# Populate inventory with instances in these regions
+regions:
+  - ap-southeast-2
+    # so the groups are tag_web and tag_redis
