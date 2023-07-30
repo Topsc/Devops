@@ -18,6 +18,7 @@ pipeline {
             steps{
                 dir("./") {
                     sh 'yarn install'
+                    sh 'yarn add draft-js react react-dom'
                 }
             }
         }
