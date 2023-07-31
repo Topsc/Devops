@@ -21,7 +21,7 @@ pipeline {
                     sh 'npm install --legacy-peer-deps'
                     sh 'yarn add draft-js react react-dom'
                     sh 'npm install eslint --legacy-peer-deps'
-                    sh 'npx eslint src --legacy-peer-deps'
+                    sh 'npx eslint src'
                 }
             }
         }
