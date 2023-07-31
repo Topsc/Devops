@@ -4,10 +4,10 @@
 resource "aws_ecs_cluster" "cluster_uat" {
   name               = "${var.app_name}-ecs-cluster-${var.app_environment_uat}"
   capacity_providers = ["FARGATE"]
-    setting {
-      name = "containerInsights"
-      value = "enabled"
-    }
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
   tags = {
     Name        = "${var.app_name}-ecs-cluster-${var.app_environment_uat}"
     Environment = var.app_environment_uat
@@ -58,7 +58,7 @@ resource "aws_ecs_task_definition" "task_uat" {
       },
       environmentFiles = [
         {
-          value = "arn:aws:s3:::techscrum-backend-bucket/config/.env"
+          value = "arn:aws:s3:::${var.bucket_env_name}/config/.env"
           type  = "s3"
         }
       ]
@@ -68,6 +68,7 @@ resource "aws_ecs_task_definition" "task_uat" {
     Name        = "${var.app_name}-task-denifition-${var.app_environment_uat}"
     Environment = var.app_environment_uat
   }
+  depends_on = [var.s3_object]
 }
 
 ///create uat ecs servcie
@@ -77,33 +78,25 @@ resource "aws_ecs_service" "service_uat" {
   task_definition = aws_ecs_task_definition.task_uat.arn
   desired_count   = var.task_desired_count
   launch_type     = "FARGATE"
-
   network_configuration {
     subnets          = var.uat_public_subnet_ids
     assign_public_ip = true
     security_groups  = [var.uat_service_sg_id]
   }
-
-  # load_balancer {
-  #   target_group_arn = var.tg_uat_arn
-  #   container_name   = "${var.app_name}-container-${var.app_environment_uat}"
-  #   container_port   = var.port
-  # }
   tags = {
     Name        = "${var.app_name}-ecs-service-${var.app_environment_uat}"
     Environment = var.app_environment_uat
   }
-  # depends_on = [var.listener_arn]
 }
 
 // create prod cluster
 resource "aws_ecs_cluster" "cluster_prod" {
   name               = "${var.app_name}-ecs-cluster-${var.app_environment_prod}"
   capacity_providers = ["FARGATE"]
-    setting {
-      name = "containerInsights"
-      value = "enabled"
-    }
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
   tags = {
     Name        = "${var.app_name}-ecs-cluster-${var.app_environment_prod}"
     Environment = var.app_environment_prod
@@ -151,7 +144,7 @@ resource "aws_ecs_task_definition" "task_prod" {
       },
       environmentFiles = [
         {
-          value = "arn:aws:s3:::techscrum-backend-bucket/config/.env"
+          value = "arn:aws:s3:::${var.bucket_env_name}/config/.env"
           type  = "s3"
         }
       ]
@@ -161,6 +154,7 @@ resource "aws_ecs_task_definition" "task_prod" {
     Name        = "${var.app_name}-task-denifition-${var.app_environment_prod}"
     Environment = var.app_environment_prod
   }
+  depends_on = [var.s3_object]
 }
 
 ///create ecs servcie
@@ -189,8 +183,6 @@ resource "aws_ecs_service" "service_prod" {
   }
 }
 
-
-
 ///iam policy for ecsTaskExecutionRole
 resource "aws_iam_policy" "s3_access_policy" {
   name        = "${var.app_name}-ecs-task-s3-access-policy"
@@ -204,12 +196,12 @@ resource "aws_iam_policy" "s3_access_policy" {
     {
       "Effect": "Allow",
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::techscrum-backend-bucket/*"
+      "Resource": "arn:aws:s3:::${var.bucket_env_name}/*"
     },
     {
       "Effect": "Allow",
       "Action": "s3:GetBucketLocation",
-      "Resource": "arn:aws:s3:::techscrum-backend-bucket"
+      "Resource": "arn:aws:s3:::${var.bucket_env_name}"
     }
   ]
 }
