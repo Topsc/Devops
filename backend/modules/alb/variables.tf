@@ -1,15 +1,13 @@
 variable "app_name" {
   type        = string
   description = "Application Name"
-}
-
-variable "backend_bucket" {
-  description = "backend_bucket"
+  default     = "techscrum"
 }
 
 variable "app_environment_uat" {
   type        = string
   description = "Application Environment"
+  default     = "uat"
 }
 
 variable "app_environment_prod" {

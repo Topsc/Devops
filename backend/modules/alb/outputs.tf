@@ -1,6 +1,13 @@
+
+
+# output "tg_uat_arn" {
+#   description = "tg uat arn"
+#   value = aws_lb_target_group.tg_uat.arn
+# }
+
 output "tg_prod_arn" {
   description = "tg prod arn"
-  value       = aws_lb_target_group.tg_prod.arn
+  value = aws_lb_target_group.tg_prod.arn
 }
 
 output "listener_arn" {
