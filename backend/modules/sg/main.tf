@@ -12,7 +12,7 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-        description = "Allow HTTPS traffic"
+    description      = "Allow HTTPS traffic"
     protocol         = "tcp"
     from_port        = 443
     to_port          = 443
@@ -52,8 +52,8 @@ resource "aws_security_group" "service_sg_uat" {
   }
 
   tags = {
-    Name = "${var.app_name}-service-security-group-${var.app_environment_uat}"
-    Environment = var.app_environment_uat    
+    Name        = "${var.app_name}-service-security-group-${var.app_environment_uat}"
+    Environment = var.app_environment_uat
   }
 }
 
@@ -79,7 +79,7 @@ resource "aws_security_group" "service_sg_prod" {
   }
 
   tags = {
-    Name = "${var.app_name}-service-security-group-${var.app_environment_prod}"
-    Environment = var.app_environment_prod    
+    Name        = "${var.app_name}-service-security-group-${var.app_environment_prod}"
+    Environment = var.app_environment_prod
   }
 }

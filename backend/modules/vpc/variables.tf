@@ -14,22 +14,22 @@ variable "vpc_cidr_block_prod" {
 }
 
 variable "public_subnets_uat" {
-  type        = list(string) 
+  type        = list(string)
   description = "List of uat public subnets"
 }
 
 variable "public_subnets_prod" {
-  type        = list(string) 
+  type        = list(string)
   description = "List of prod public subnets"
 }
 
 variable "private_subnets_prod" {
-  type        = list(string) 
+  type        = list(string)
   description = "List of prod private subnets"
 }
 
 variable "availability_zones" {
-  type        = list(string) 
+  type        = list(string)
   description = "List of availability zones"
 }
 
