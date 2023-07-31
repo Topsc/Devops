@@ -4,7 +4,7 @@ resource "aws_vpc" "vpc_uat" {
   instance_tenancy = "default"
 
   tags = {
-    Name =  "${var.app_name}-vpc-${var.app_environment_uat}"
+    Name        = "${var.app_name}-vpc-${var.app_environment_uat}"
     Environment = var.app_environment_uat
   }
 }
@@ -14,7 +14,7 @@ resource "aws_vpc" "vpc_prod" {
   instance_tenancy = "default"
 
   tags = {
-    Name =  "${var.app_name}-vpc-${var.app_environment_prod}"
+    Name        = "${var.app_name}-vpc-${var.app_environment_prod}"
     Environment = var.app_environment_prod
   }
 }
@@ -38,7 +38,7 @@ resource "aws_internet_gateway" "techscrum-internet-gateway-prod" {
 
 #  aws public subnets for uat
 resource "aws_subnet" "techscrum-public-subnet-uat" {
-  vpc_id                  =  aws_vpc.vpc_uat.id
+  vpc_id                  = aws_vpc.vpc_uat.id
   cidr_block              = element(var.public_subnets_uat, count.index)
   availability_zone       = element(var.availability_zones, count.index)
   count                   = length(var.public_subnets_uat)
@@ -52,7 +52,7 @@ resource "aws_subnet" "techscrum-public-subnet-uat" {
 
 # aws public subnets for prod
 resource "aws_subnet" "techscrum-public-subnet-prod" {
-  vpc_id                  =  aws_vpc.vpc_prod.id
+  vpc_id                  = aws_vpc.vpc_prod.id
   cidr_block              = element(var.public_subnets_prod, count.index)
   availability_zone       = element(var.availability_zones, count.index)
   count                   = length(var.public_subnets_prod)
@@ -67,7 +67,7 @@ resource "aws_subnet" "techscrum-public-subnet-prod" {
 
 # aws private sunbets for uat
 resource "aws_subnet" "techscrum-private-subnet-prod" {
-  vpc_id            =  aws_vpc.vpc_prod.id
+  vpc_id            = aws_vpc.vpc_prod.id
   count             = length(var.private_subnets_prod)
   cidr_block        = element(var.private_subnets_prod, count.index)
   availability_zone = element(var.availability_zones, count.index)
@@ -80,9 +80,9 @@ resource "aws_subnet" "techscrum-private-subnet-prod" {
 
 # aws elastic ip address
 resource "aws_eip" "nat_eip" {
-  vpc = true
+  vpc   = true
   count = length(var.public_subnets_prod)
-  
+
   tags = {
     Name        = "${var.app_name}-nat-eip-${count.index + 1}-${var.app_environment_prod}"
     Environment = var.app_environment_prod
