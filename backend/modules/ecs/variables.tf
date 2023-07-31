@@ -3,6 +3,16 @@ variable "app_name" {
   description = "Application Name"
 }
 
+variable "s3_object" {
+  description = "S3 object from another module"
+  type        = any
+}
+
+variable "bucket_env_name" {
+  type        = string
+  description = "The name of the env S3 bucket"
+}
+
 variable "app_environment_uat" {
   type        = string
   description = "Application Environment"
@@ -67,8 +77,3 @@ variable "listener_arn" {
   description = "ARN of the listener"
   type        = string
 }
-
-# variable "tg_uat_arn" {
-#   description = "tg uat arn"
-#   type        = string
-# }

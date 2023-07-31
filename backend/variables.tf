@@ -101,4 +101,17 @@ variable "domain_name" {
 variable "sns_email" {
   description = "sns email"
   type        = string
+  default     = "jaronfang@163.com"
+}
+
+variable "bucket_name" {
+  type        = string
+  description = "The name of the S3 bucket"
+  default     = "techscrum-alb-log-bucket"
+}
+
+variable "bucket_env_name" {
+  type        = string
+  description = "The name of the env S3 bucket"
+  default     = "techscrum-env-bucket"
 }
