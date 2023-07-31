@@ -28,5 +28,5 @@ variable "prod_vpc_id" {
 variable "port" {
   description = "The starting port for a range of ports"
   type        = number
-  #   default     = 8000
+#   default     = 8000
 }

@@ -1,11 +1,11 @@
 output "uat_vpc_id" {
   description = "The id of the uat VPC"
-  value       = aws_vpc.vpc_uat.id
+  value = aws_vpc.vpc_uat.id
 }
 
 output "prod_vpc_id" {
   description = "The id of the prod VPC"
-  value       = aws_vpc.vpc_prod.id
+  value = aws_vpc.vpc_prod.id
 }
 
 output "uat_public_subnet_ids" {
