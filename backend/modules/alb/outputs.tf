@@ -5,7 +5,7 @@ output "tg_prod_arn" {
 
 output "listener_arn" {
   description = "The ARN of the listener"
-  value       = aws_lb_listener.listener.arn
+  value       = aws_lb_listener.https_listener.arn
 }
 
 output "alb_dns_name" {

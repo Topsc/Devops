@@ -1,3 +1,41 @@
+//cert domain
+data "aws_route53_zone" "hosted_zone" {
+  name = var.domain_name
+}
+
+resource "aws_acm_certificate" "cert" {
+  domain_name       = "prod.${var.domain_name}"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "certvalidation" {
+  for_each = {
+    for d in aws_acm_certificate.cert.domain_validation_options : d.domain_name => {
+      name   = d.resource_record_name
+      record = d.resource_record_value
+      type   = d.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.hosted_zone.zone_id
+}
+
+resource "aws_acm_certificate_validation" "certvalidation" {
+  certificate_arn         = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [for r in aws_route53_record.certvalidation : r.fqdn]
+}
+
+
+//create alb
 resource "aws_lb" "alb" {
   name               = "${var.app_name}-alb"
   internal           = false
@@ -32,11 +70,12 @@ resource "aws_lb_target_group" "tg_prod" {
   }
 }
 
-///ALB-listener
-resource "aws_lb_listener" "listener" {
+resource "aws_lb_listener" "https_listener" {
   load_balancer_arn = aws_lb.alb.arn
-  port              = 80
-  protocol          = "HTTP"
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08" // or another policy if needed
+  certificate_arn   = aws_acm_certificate_validation.certvalidation.certificate_arn
 
   default_action {
     type             = "forward"
@@ -44,8 +83,8 @@ resource "aws_lb_listener" "listener" {
   }
 }
 
-resource "aws_lb_listener_rule" "prod" {
-  listener_arn = aws_lb_listener.listener.arn
+resource "aws_lb_listener_rule" "https_prod" {
+  listener_arn = aws_lb_listener.https_listener.arn
   priority     = 200
 
   action {
