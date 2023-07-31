@@ -9,7 +9,7 @@ pipeline {
             steps{
                 // Get source code from a GitHub repository
                 
-                git branch:'db-integrated', credentialsId:'jenkins_node', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
+                git branch:'main', credentialsId:'jenkins_node', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
             
             }
         }
@@ -18,8 +18,10 @@ pipeline {
             steps{
                 dir("./") {
                     // sh 'yarn install'
-                    sh 'npm install --force'
+                    sh 'npm install --legacy-peer-deps'
                     sh 'yarn add draft-js react react-dom'
+                    sh 'npm install eslint --legacy-peer-deps'
+                    sh 'npx eslint src'
                 }
             }
         }
@@ -27,7 +29,7 @@ pipeline {
         stage('Build') {
             steps{
                 dir("./") {
-                    sh 'yarn build'
+                    sh 'npm run build'
                 }
             }
         }
