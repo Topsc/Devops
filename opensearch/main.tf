@@ -24,7 +24,7 @@ terraform {
 
     # Enable during Step-09     
     # For State Locking
-    dynamodb_table = "techscrum-lock-table"
+    # dynamodb_table = "techscrum-lock-table"
   }
 }
 module "lambda_role_module" {
