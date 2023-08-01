@@ -23,7 +23,7 @@ resource "aws_opensearch_domain" "logs_opensearch_domain" {
   cluster_config {
     instance_type          = "t3.small.search"
     zone_awareness_enabled = false
-    instance_count = 1
+    instance_count         = 1
   }
 
   advanced_options = {

@@ -1,12 +1,12 @@
 variable "role_arn" {
-    type = string
-    description = "arn of the lambda role"
+  type        = string
+  description = "arn of the lambda role"
 }
 
 
 variable "OPENSEARCH_ENDPOINT" {
-    type = string
-    description = "OPENSEARCH ENDPOINT"
+  type        = string
+  description = "OPENSEARCH ENDPOINT"
 }
 
 variable "app_name" {

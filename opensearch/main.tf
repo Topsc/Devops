@@ -8,19 +8,19 @@ terraform {
 }
 
 provider "aws" {
-  shared_credentials_file = "~/.aws/credentials"
-  profile                 = "secondaccount"
-  region                  = var.aws_region
+  # shared_credentials_file = "~/.aws/credentials"
+  # profile                 = "secondaccount"
+  region = var.aws_region
 }
 
 terraform {
   backend "s3" {
     //if you use multi aws account, add sahred-credentials_file and profile
-    shared_credentials_file = "~/.aws/credentials"
-    profile                 = "secondaccount"
-    bucket                  = "techscrum-tfstate-bucket"
-    key                     = "opensearch/terraform.tfstate"
-    region                  = "ap-southeast-2"
+    # shared_credentials_file = "~/.aws/credentials"
+    # profile                 = "secondaccount"
+    bucket = "techscrum-tfstate-bucket"
+    key    = "opensearch/terraform.tfstate"
+    region = "ap-southeast-2"
 
     # Enable during Step-09     
     # For State Locking

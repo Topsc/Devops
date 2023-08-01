@@ -5,7 +5,7 @@ data "aws_caller_identity" "current" {}
 //create log subscription_filter lambda
 resource "aws_lambda_function" "log_lambda" {
   function_name = "LogProcessor"
-  role = var.role_arn
+  role          = var.role_arn
   handler       = "index.handler"
 
   source_code_hash = filebase64sha256("index.zip")
@@ -26,7 +26,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_performance_uat" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.log_lambda.function_name
   principal     = "logs.${data.aws_region.current.name}.amazonaws.com"
-  
+
   source_arn = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/ecs/containerinsights/${var.app_name}-ecs-cluster-${var.app_environment_uat}/performance:*"
 }
 
