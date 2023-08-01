@@ -64,6 +64,11 @@ module "sg" {
   app_environment_prod = var.app_environment_prod
 }
 
+module "ACM" {
+  source      = "./modules/ACM" // path to your module  
+  domain_name = var.domain_name
+}
+
 module "alb" {
   source                 = "./modules/alb" // path to your module
   prod_vpc_id            = module.vpc.prod_vpc_id
@@ -75,6 +80,7 @@ module "alb" {
   prod_public_subnet_ids = module.vpc.prod_public_subnet_ids
   domain_name            = var.domain_name
   backend_bucket         = module.s3.backend_bucket
+  certificate_arn        = module.ACM.certificate_arn
 }
 
 module "route53" {

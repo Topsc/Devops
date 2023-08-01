@@ -101,7 +101,7 @@ variable "domain_name" {
 variable "sns_email" {
   description = "sns email"
   type        = string
-  default     = "jaronfang@163.com"
+  default     = "devopstechscrum@outlook.com"
 }
 
 variable "bucket_name" {
