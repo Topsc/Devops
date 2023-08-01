@@ -13,11 +13,13 @@ variable "domain_name" {
 variable "masteruser_name" {
   description = "masteruser name"
   type        = string
+  default     = "admin"
 }
 
 variable "masteruser_password" {
   description = "masteruser password"
   type        = string
+  default     = "Admin10$"
 }
 
 variable "app_name" {
