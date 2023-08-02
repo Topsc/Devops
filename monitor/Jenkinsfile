@@ -24,7 +24,7 @@ pipeline {
         stage('run git') {
             steps{
                 dir("./monitor/ansible-playbook/ansible-playbook-plain") {
-                    sh 'ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts'
+                    sh 'sudo ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts'
                     sshagent(credentials: ['jenkins_node']) {
                         ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml')
                     }
