@@ -18,6 +18,6 @@
         accept_hostkey: yes
         update: yes
       environment:
-        GIT_SSH_COMMAND: "ssh -i $SSH_KEY"
-        # GIT_SSH_COMMAND: "echo '{{ private_key_content }}' > /home/ubuntu/githubkey && chmod 600 /home/ubuntu/githubkey && ssh -i /home/ubuntu/githubkey"
+        # GIT_SSH_COMMAND: "ssh -i $SSH_KEY"
+        GIT_SSH_COMMAND: "echo '{{ private_key_content }}' > /home/ubuntu/githubkey && chmod 600 /home/ubuntu/githubkey && ssh -i /home/ubuntu/githubkey"
       
