@@ -28,7 +28,7 @@ pipeline {
                 dir("./monitor/ansible-playbook/ansible-playbook-plain") {
                 withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_node', keyFileVariable: 'SSH_KEY')]) {
                 //sh 'export GIT_SSH_COMMAND="ssh -i $SSH_KEY"'
-                ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml', extraVars: [private_key_content: readFile(keyFile)],)
+                ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml', extraVars: [private_key_content: readFile(SSH_KEY)],)
                 }
             }
             }
