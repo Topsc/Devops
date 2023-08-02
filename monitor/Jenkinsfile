@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    
+
+    stages {
+        stage('Git checkout') {
+            steps{
+                // Get source code from a GitHub repository
+                
+                git branch:'monitor-ansible', credentialsId:'jenkins_node', url:'git@github.com:DevOpsTechscrum/Devops.git'
+            
+            }
+        }
+        // run docker
+        stage('run docker') {
+            steps{
+                dir("./ansible-playbook") {
+                    ansiblePlaybook credentialsId: 'monitor-ec2-key', inventory: 'inventory.aws_ec2.yaml', playbook: './ansible-playbook-plain/docker.yml'
+                }
+            }
+        }
+        
+        // stage('run git') {
+        //     steps{
+        //         dir("./ansible-playbook") {
+        //             sh 'ansible-playbook -i ../inventory.aws_ec2.yaml git.yaml'
+        //         }
+        //     }
+        // }
+
+        // stage('run yace') {
+        //     steps{
+        //         dir("./ansible-playbook") {
+        //             sh 'ansible-playbook -i ../inventory.aws_ec2.yaml git.yaml'
+        //         }
+        //     }
+        // }
+
+
+        // stage('run yace'){
+        //     steps{
+        //         dir("./ansible-playbook"){
+        //         withAWS(region:"ap-southeast-2", credentials:"jenkins_aws"){
+        //             // s3Delete(bucket: "${env.UATS3BucketName}", path:'**/*')
+        //             s3Upload(bucket: "techscrum-linda-frontend", workingDir:'build', includePathPattern:'**/*');
+        //             }
+        //         } 
+        //     }   
+        // }
+    }
+}

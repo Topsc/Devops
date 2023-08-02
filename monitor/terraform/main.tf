@@ -1,4 +1,19 @@
 terraform {
+  # backend "local" {
+
+  # }
+  backend "s3" {
+    bucket = "techscrum-tfstate-bucket"
+    key    = "monitor-ec2-tfstate/terraform.tfstate"
+    region = "ap-southeast-2"
+     
+    # For State Locking
+    dynamodb_table = "techscrum-lock-table"
+  }
+}
+
+
+terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -106,6 +121,3 @@ variable "vpc_id" {
 }
 
 
-
-# security group all
-#ami-04b9e92b5572fa0d1
