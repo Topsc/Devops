@@ -21,16 +21,28 @@ pipeline {
             }
         }
         
-        stage('run git') {
+        stage('Checkout from GitHub') {
             steps{
                 dir("./monitor/ansible-playbook/ansible-playbook-plain") {
-                    sh 'ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts'
-                    sshagent(credentials: ['jenkins_node']) {
-                        ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml')
-                    }
+                withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_node', keyFileVariable: 'SSH_KEY')]) {
+                sh 'export GIT_SSH_COMMAND="ssh -i $SSH_KEY"'
+                ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml')
                 }
             }
-        }
+            }
+    }
+
+
+        // stage('run git') {
+        //     steps{
+        //         dir("./monitor/ansible-playbook/ansible-playbook-plain") {
+        //             sh 'ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts'
+        //             sshagent(credentials: ['jenkins_node']) {
+        //                 ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml')
+        //             }
+        //         }
+        //     }
+        // }
 
         // stage('run yace') {
         //     steps{
