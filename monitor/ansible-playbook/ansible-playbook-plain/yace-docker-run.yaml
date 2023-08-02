@@ -13,7 +13,7 @@
   tasks:
     - name: run yace docker docker-compose
       shell:
-        cmd: "AWS_REGION=ap-southeast-2 AWS_ACCESS_KEY_ID={{ accessKey }} AWS_SECRET_ACCESS_KEY={{ accessSecretKey }} docker-compose up -d -rm"
+        cmd: "AWS_REGION=ap-southeast-2 AWS_ACCESS_KEY_ID={{ accessKey }} AWS_SECRET_ACCESS_KEY={{ accessSecretKey }} docker-compose up -d --force-recreate"
         chdir: "/home/ubuntu/devops/techscrum-monitor/monitor/yace-docker-compose"
       register: output
 
