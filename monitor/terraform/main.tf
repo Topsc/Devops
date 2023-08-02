@@ -117,7 +117,7 @@ resource "aws_instance" "techscrum-monitor-ec2" {
 
 variable "vpc_id" {
   type = string
-  default = "vpc-0402e1532b1ccb078"
+  default = "vpc-00e63c32f47d29dc8"
 }
 
 
