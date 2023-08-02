@@ -15,7 +15,7 @@ pipeline {
         // run docker
         stage('run docker') {
             steps{
-                dir("./ansible-playbook") {
+                dir("./monitor/ansible-playbook") {
                     ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: 'inventory.aws_ec2.yaml', playbook: './ansible-playbook-plain/docker.yml')
                 }
             }
