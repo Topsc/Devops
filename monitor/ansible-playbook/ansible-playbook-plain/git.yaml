@@ -1,8 +1,8 @@
 ---
 - name: git module demo
   hosts: all
-  become: yes
-  become_user: root
+  # become: yes
+  # become_user: root
   user: ubuntu
 
   vars:
