@@ -12,4 +12,4 @@
 
 all: 
   hosts:
-    ec2-54-252-59-131.ap-southeast-2.compute.amazonaws.com:
+    ec2-52-62-173-110.ap-southeast-2.compute.amazonaws.com:
