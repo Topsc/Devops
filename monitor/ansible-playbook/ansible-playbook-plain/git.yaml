@@ -6,13 +6,13 @@
   user: ubuntu
 
   vars:
-    repo: "git@github.com:chaolin1984/yet-another-cloudwatch-exporter.git"
+    repo: "git@github.com:DevOpsTechscrum/Devops.git"
     dest: "~/devops/techscrum-monitor"
-    sshkey: "/home/ubuntu/.ssh/id_rsa"
+ 
   tasks:
     - name: checkout git repo
 
       git:
         repo: "{{repo}}"
         dest: "{{dest}}"
-        key_file: "{{sshkey}}"
+      
