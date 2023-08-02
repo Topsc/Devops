@@ -1,55 +1,3 @@
-###############sg########################
-resource "aws_security_group" "monitor-sg" {
-  name        = "monitor-sg"
-  description = "monitor security group"
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 9090
-    to_port     = 9090
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "monitor"
-  }
-}
-
 ######################iam role##################
 data "aws_iam_policy_document" "yace_policy_document" {
   statement {
@@ -124,11 +72,12 @@ resource "aws_key_pair" "generated_key" {
 }
 
 resource "aws_instance" "monitor-instance" {
-  ami           = "ami-05c3b6a7b33d2952c" # This is the Amazon Linux 2 LTS AMI ID for us-east-1
-  instance_type = "t2.medium"
-  vpc_security_group_ids = [aws_security_group.monitor-sg.id]
-  key_name = aws_key_pair.generated_key.key_name
-  iam_instance_profile = aws_iam_instance_profile.ec2_yace_profile.name
+  ami                    = "ami-05c3b6a7b33d2952c" # This is the Amazon Linux 2 LTS AMI ID for ap-souteast-2
+  instance_type          = "t2.medium"
+  subnet_id              = var.subnet_id
+  vpc_security_group_ids = [var.monitor_sg_id]
+  key_name               = aws_key_pair.generated_key.key_name
+  iam_instance_profile   = aws_iam_instance_profile.ec2_yace_profile.name
   tags = {
     Name = "monitor-instance"
   }
@@ -155,7 +104,7 @@ resource "local_file" "AnsiblePlaybook" {
 }
 
 resource "local_file" "AnsibleInventory" {
-  content = "[ec2-instances]\n${aws_instance.monitor-instance.public_ip} ansible_user=ec2-user ansible_ssh_private_key_file=./private_key.pem"
+  content  = "[ec2-instances]\n${aws_instance.monitor-instance.public_ip} ansible_user=ec2-user ansible_ssh_private_key_file=./private_key.pem"
   filename = "./inventory.ini"
 }
 

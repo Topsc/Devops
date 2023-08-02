@@ -39,3 +39,21 @@ variable "app_environment_prod" {
   description = "Application Environment"
   default     = "prod"
 }
+
+variable "vpc_cidr_block" {
+  type        = string
+  description = "cidr block  of  vpc"
+  default     = "13.0.0.0/16"
+}
+
+variable "public_subnets" {
+  type        = list(string)
+  description = "List of  public subnets"
+  default     = ["13.0.0.0/20", "13.0.16.0/20"]
+}
+
+variable "availability_zones" {
+  type        = list(string)
+  description = "List of availability zones"
+  default     = ["ap-southeast-2a", "ap-southeast-2b"]
+}

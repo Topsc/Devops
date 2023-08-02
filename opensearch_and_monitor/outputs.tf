@@ -9,6 +9,6 @@
 # }
 
 output "ec2_ip" {
-    description = "ec2 ip"
-    value = module.ec2_prometheus_yace_grafana.ec2_ip
+  description = "ec2 ip"
+  value       = module.ec2_prometheus_yace_grafana.ec2_ip
 }
