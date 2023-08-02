@@ -1,7 +1,9 @@
 pipeline {
     agent any
 
-    
+    environment {
+        PRIVATE_KEY = credentials('jenkins_node')
+    }
 
     stages {
         stage('Git checkout') {
@@ -24,10 +26,10 @@ pipeline {
         stage('Checkout from GitHub') {
             steps{
                 dir("./monitor/ansible-playbook/ansible-playbook-plain") {
-                withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_node', keyFileVariable: 'SSH_KEY')]) {
-                sh 'export GIT_SSH_COMMAND="ssh -i $SSH_KEY"'
+                //withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_node', keyFileVariable: 'SSH_KEY')]) {
+                //sh 'export GIT_SSH_COMMAND="ssh -i $SSH_KEY"'
                 ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml')
-                }
+                //}
             }
             }
     }

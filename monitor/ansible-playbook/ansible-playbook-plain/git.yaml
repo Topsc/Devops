@@ -16,4 +16,7 @@
         repo: "{{repo}}"
         dest: "{{dest}}"
         accept_hostkey: yes
+        update: yes
+      environment:
+        GIT_SSH_COMMAND: "ssh -i $PRIVATE_KEY"
       
