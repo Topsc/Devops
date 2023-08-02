@@ -25,7 +25,7 @@ pipeline {
             steps{
                 dir("./monitor/ansible-playbook/ansible-playbook-plain") {
                     sshagent(credentials: ['jenkins_node']) {
-                        ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../ansible-simple/hosts', playbook: './git.yaml')
+                        ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml')
                     }
                 }
             }
