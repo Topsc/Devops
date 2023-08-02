@@ -28,31 +28,22 @@ pipeline {
                 dir("./monitor/ansible-playbook/ansible-playbook-plain") {
                 withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_node', keyFileVariable: 'SSH_KEY')]) {
                 //sh 'export GIT_SSH_COMMAND="ssh -i $SSH_KEY"'
-                ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml', extraVars: [private_key_content: readFile(SSH_KEY)],)
+                ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml', extraVars: [private_key_content: readFile(SSH_KEY)])
                 }
             }
             }
     }
 
-
-        // stage('run git') {
-        //     steps{
-        //         dir("./monitor/ansible-playbook/ansible-playbook-plain") {
-        //             sh 'ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts'
-        //             sshagent(credentials: ['jenkins_node']) {
-        //                 ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './git.yaml')
-        //             }
-        //         }
-        //     }
-        // }
-
-        // stage('run yace') {
-        //     steps{
-        //         dir("./ansible-playbook") {
-        //             sh 'ansible-playbook -i ../inventory.aws_ec2.yaml git.yaml'
-        //         }
-        //     }
-        // }
+        stage('run yace') {
+            steps{
+                dir("./monitor/ansible-playbook/ansible-playbook-plain") {
+                withCredentials([aws(credentialsId: 'jenkins_aws', accessKeyVariable: 'AWS_ACCESSKEY', secretKeyVariable: 'AWS_SECKEY')]) {
+                //sh 'export GIT_SSH_COMMAND="ssh -i $SSH_KEY"'
+                ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './yace-docker-run.yaml', extraVars: [accessKey: AWS_ACCESSKEY, accessSecretKey: AWS_SECKEY])
+                }
+                }
+            }
+        }
 
 
         // stage('run yace'){
