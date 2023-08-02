@@ -129,16 +129,33 @@ resource "aws_iam_instance_profile" "ec2_yace_profile" {
   name = "${aws_iam_role.ec2_yace_role.name}-profile"
   role = aws_iam_role.ec2_yace_role.name
 }
+//generate ssh-key
+resource "tls_private_key" "ssh" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "generated_key" {
+  key_name   = "generated-key"
+  public_key = tls_private_key.ssh.public_key_openssh
+}
 
 resource "aws_instance" "monitor-instance" {
   ami           = "ami-05c3b6a7b33d2952c" # This is the Amazon Linux 2 LTS AMI ID for us-east-1
   instance_type = "t2.medium"
   vpc_security_group_ids = [aws_security_group.monitor-sg.id]
-  key_name = "jiayuan-access" 
+  key_name = aws_key_pair.generated_key.key_name
   iam_instance_profile = aws_iam_instance_profile.ec2_yace_profile.name
   tags = {
     Name = "monitor-instance"
   }
+}
+
+//save the private key in local
+resource "local_file" "private_key" {
+  sensitive_content = tls_private_key.ssh.private_key_pem
+  filename          = "${path.module}/private_key.pem"
+  file_permission   = "0600"
 }
 
 data "template_file" "ansible_playbook" {
@@ -155,7 +172,7 @@ resource "local_file" "AnsiblePlaybook" {
 }
 
 resource "local_file" "AnsibleInventory" {
-  content = "[ec2-instances]\n${aws_instance.monitor-instance.public_ip} ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/jiayuan-access.pem"
+  content = "[ec2-instances]\n${aws_instance.monitor-instance.public_ip} ansible_user=ec2-user ansible_ssh_private_key_file=${path.module}/private_key.pem"
   filename = "${path.module}/inventory.ini"
 }
 
