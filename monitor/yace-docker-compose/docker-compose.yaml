@@ -47,8 +47,9 @@ services:
     container_name: yace
     restart: always
     environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_REGION: ${AWS_REGION}
-      AWS_PROFILE: ${AWS_PROFILE}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     expose: 
       - 8080
     volumes:
