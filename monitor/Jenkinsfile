@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Git checkout') {
+        stage('Git checkout monitor sourecode') {
             steps{
                 // Get source code from a GitHub repository
                 
@@ -15,7 +15,7 @@ pipeline {
             }
         }
         // run docker
-        stage('run docker') {
+        stage('Install docker via Ansible') {
             steps{
                 dir("./monitor/ansible-playbook/ansible-playbook-plain") {
                     ansiblePlaybook (credentialsId: 'monitor-ec2-key', inventory: '../inventory.aws_ec2.yaml', playbook: './docker.yaml')
@@ -23,7 +23,7 @@ pipeline {
             }
         }
         
-        stage('Checkout from GitHub') {
+        stage('Ansible Checkout code on EC2') {
             steps{
                 dir("./monitor/ansible-playbook/ansible-playbook-plain") {
                 withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_node', keyFileVariable: 'SSH_KEY')]) {
@@ -34,7 +34,7 @@ pipeline {
             }
     }
 
-        stage('run yace') {
+        stage('Run yace via Ansible') {
             steps{
                 dir("./monitor/ansible-playbook/ansible-playbook-plain") {
                 withCredentials([aws(credentialsId: 'jenkins_aws', accessKeyVariable: 'AWS_ACCESSKEY', secretKeyVariable: 'AWS_SECKEY')]) {
