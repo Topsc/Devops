@@ -15,7 +15,9 @@ data "aws_iam_policy_document" "yace_policy_document" {
       "ec2:DescribeSpotFleetRequests",
       "shield:ListProtections",
       "storagegateway:ListGateways",
-      "storagegateway:ListTagsForResource"
+      "storagegateway:ListTagsForResource",
+      "es:ESHttpGet",
+      "es:ESHttpHead"
     ]
 
     resources = ["*"]
