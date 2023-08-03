@@ -116,4 +116,5 @@ module "cloudwatch" {
   app_environment_uat  = var.app_environment_uat
   app_environment_prod = var.app_environment_prod
   sns_email            = var.sns_email
+  alb_arn_suffix = module.alb.alb_arn_suffix
 }

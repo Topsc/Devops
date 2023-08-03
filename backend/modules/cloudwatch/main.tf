@@ -37,11 +37,47 @@ resource "aws_cloudwatch_dashboard" "ecs_dashboard" {
         "region": "ap-southeast-2",
         "title": "ECS Service - Memory Utilization"
       }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "ECS/ContainerInsights", "StorageReadBytes", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_prod}" ],
+          [ "ECS/ContainerInsights", "StorageWriteBytes", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_prod}" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-southeast-2",
+        "title": "ECS Prod Service - Storage Read and Write Bytes"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 13,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "ECS/ContainerInsights", "NetworkRxBytes", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_prod}" ],
+          [ "ECS/ContainerInsights", "NetworkTxBytes", "ClusterName", "${var.app_name}-ecs-cluster-${var.app_environment_prod}", "ServiceName", "${var.app_name}-ecs-service-${var.app_environment_prod}" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-southeast-2",
+        "title": "ECS prod Service - Network I/O"
+      }
     }
   ]
 }
 EOF
 }
+
+
 resource "aws_cloudwatch_dashboard" "alb_dashboard" {
   dashboard_name = "ALB-Dashboard"
 
@@ -56,7 +92,7 @@ resource "aws_cloudwatch_dashboard" "alb_dashboard" {
       "height": 6,
       "properties": {
         "metrics": [
-          [ "AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", "${var.app_name}-alb" ],
+          [ "AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", "${var.alb_arn_suffix}" ],
           [ ".", "HTTPCode_Target_5XX_Count", ".", "." ]
         ],
         "view": "timeSeries",
@@ -67,18 +103,50 @@ resource "aws_cloudwatch_dashboard" "alb_dashboard" {
     },
     {
       "type": "metric",
+      "x": 13,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${var.alb_arn_suffix}" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-southeast-2",
+        "title": "ALB - Response Time"
+      }
+    },
+    {
+      "type": "metric",
       "x": 0,
       "y": 6,
       "width": 12,
       "height": 6,
       "properties": {
         "metrics": [
-          [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${var.app_name}-alb" ]
+          [ "AWS/ApplicationELB", "RequestCount", "LoadBalancer", "${var.alb_arn_suffix}" ]
         ],
         "view": "timeSeries",
         "stacked": false,
         "region": "ap-southeast-2",
-        "title": "ALB - Response Time"
+        "title": "ALB - Request Count"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 13,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/ApplicationELB", "ActiveConnectionCount", "LoadBalancer", "${var.alb_arn_suffix}" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-southeast-2",
+        "title": "ALB - Active Connection Count"
       }
     }
   ]
@@ -96,75 +164,6 @@ resource "aws_sns_topic_subscription" "user_updates" {
   protocol  = "email"
   endpoint  = var.sns_email
 }
-
-///create alarm and sns
-# resource "aws_cloudwatch_metric_alarm" "ecs_cpu_alarm_prod" {
-#   alarm_name          = "ecs_cpu_alarm"
-#   comparison_operator = "GreaterThanOrEqualToThreshold"
-#   evaluation_periods  = "2"
-#   metric_name         = "CPUUtilized"
-#   namespace           = "AWS/ECS"
-#   period              = "60"
-#   statistic           = "Average"
-#   threshold           = "80"
-#   alarm_description   = "This metric checks cpu utilization"
-#   alarm_actions       = [aws_sns_topic.backend_sns.arn]
-#   dimensions = {
-#     ClusterName = "${var.app_name}-ecs-cluster-${var.app_environment_prod}"
-#     ServiceName = "${var.app_name}-ecs-service-${var.app_environment_prod}"
-#   }
-# }
-
-# resource "aws_cloudwatch_metric_alarm" "ecs_memory_alarm_uat" {
-#   alarm_name          = "ecs_memory_alarm"
-#   comparison_operator = "GreaterThanOrEqualToThreshold"
-#   evaluation_periods  = "2"
-#   metric_name         = "MemoryUtilized"
-#   namespace           = "AWS/ECS"
-#   period              = "60"
-#   statistic           = "Average"
-#   threshold           = "80"
-#   alarm_description   = "This metric checks memory utilization"
-#   alarm_actions       = [aws_sns_topic.backend_sns.arn]
-#   dimensions = {
-#     ClusterName = "${var.app_name}-ecs-cluster-${var.app_environment_uat}"
-#     ServiceName = "${var.app_name}-ecs-service-${var.app_environment_uat}"
-#   }
-# }
-
-# resource "aws_cloudwatch_metric_alarm" "ecs_cpu_alarm_uat" {
-#   alarm_name          = "ecs_cpu_alarm"
-#   comparison_operator = "GreaterThanOrEqualToThreshold"
-#   evaluation_periods  = "2"
-#   metric_name         = "CPUUtilized"
-#   namespace           = "AWS/ECS"
-#   period              = "60"
-#   statistic           = "Average"
-#   threshold           = "80"
-#   alarm_description   = "This metric checks cpu utilization"
-#   alarm_actions       = [aws_sns_topic.backend_sns.arn]
-#   dimensions = {
-#     ClusterName = "${var.app_name}-ecs-cluster-${var.app_environment_uat}"
-#     ServiceName = "${var.app_name}-ecs-service-${var.app_environment_uat}"
-#   }
-# }
-
-# resource "aws_cloudwatch_metric_alarm" "ecs_memory_alarm_prod" {
-#   alarm_name          = "ecs_memory_alarm"
-#   comparison_operator = "GreaterThanOrEqualToThreshold"
-#   evaluation_periods  = "2"
-#   metric_name         = "MemoryUtilized"
-#   namespace           = "AWS/ECS"
-#   period              = "60"
-#   statistic           = "Average"
-#   threshold           = "80"
-#   alarm_description   = "This metric checks memory utilization"
-#   alarm_actions       = [aws_sns_topic.backend_sns.arn]
-#   dimensions = {
-#     ClusterName = "${var.app_name}-ecs-cluster-${var.app_environment_prod}"
-#     ServiceName = "${var.app_name}-ecs-service-${var.app_environment_prod}"
-#   }
-# }
 
 ///alb alarm 
 resource "aws_cloudwatch_metric_alarm" "alb_4xx_alarm" {

@@ -14,6 +14,10 @@ resource "aws_lb" "alb" {
     prefix  = "${var.app_name}-alb-access-logs"
     enabled = true
   }
+  tags = {
+    Name        = "${var.app_name}-alb"
+    Environment = var.app_environment_prod
+  }
 }
 
 resource "aws_lb_target_group" "tg_prod" {
@@ -31,6 +35,10 @@ resource "aws_lb_target_group" "tg_prod" {
     unhealthy_threshold = 3
     matcher             = "200"
   }
+  tags = {
+    Name        = "${var.app_name}-target-group-${var.app_environment_prod}"
+    Environment = var.app_environment_prod
+  }
 }
 
 resource "aws_lb_listener" "https_listener" {
@@ -43,6 +51,10 @@ resource "aws_lb_listener" "https_listener" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.tg_prod.arn
+  }
+  tags = {
+    Name        = "${var.app_name}-lb-listener"
+    Environment = var.app_environment_prod
   }
 }
 

@@ -17,3 +17,7 @@ variable "app_environment_prod" {
   type        = string
   description = "Application Environment"
 }
+
+variable "alb_arn_suffix" {
+  description = "alb arn suffix"
+}
