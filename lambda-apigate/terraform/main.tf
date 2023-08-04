@@ -1,7 +1,11 @@
 provider "aws" {
-  region  = "ap-southeast-2"
+  region = "ap-southeast-2"
 
-    backend "s3" {
+
+}
+
+terraform {
+  backend "s3" {
     bucket = "techscrum-tfstate-bucket"
     key    = "lambda-tfstate/terraform.tfstate"
     region = "ap-southeast-2"
@@ -11,4 +15,3 @@ provider "aws" {
     dynamodb_table = "techscrum-lock-table"
   }
 }
-

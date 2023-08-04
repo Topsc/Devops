@@ -28,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "handler_lambda_policy2" {
 }
 
 resource "aws_lambda_function" "handler" {
-  function_name = "handler"
+  function_name = "s3-backup"
 
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.handler.key
