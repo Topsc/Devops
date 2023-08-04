@@ -1,30 +1,39 @@
-var AWS= require("aws-sdk");
-exports.handler=(event,context, callback)=>{
-    var s3=new AWS.S3();
-    var sourceBucket="techscrum-linda-frontend";
-    var destinationBucket="techscrum-s3-backup-serverless";
-    var request = JSON.parse(event.body);
-    var objectKey=request.Records[0].s3.object.key;
-    var copySource=encodeURI(sourceBucket+"/"+objectKey);
-    var copyParams= {Bucket: destinationBucket, CopySource: copySource, Key: objectKey};
-    s3.copyObject(copyParams,function(err,data){
-        if(err)
-        {
-            console.log(err,err.stack);
-        }
-        else
-        {
-            console.log("s3 copied successed");
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
 
-        }
-    });
-    var response = {
-            "statusCode": 200,
-            "headers": {
-                "my_header": "my_value"
-            },
-            "body": JSON.stringify({message:"successed"}),
-            "isBase64Encoded": false
-            };
-    callback(null, response);
-}
+exports.handler = async (event, context) => {
+  
+console.log('Received event:', JSON.stringify(event));
+  
+  const sourceBucket = "techscrum-linda-frontend";
+  const destinationBucket = "techscrum-s3-backup-serverless";
+
+  try {
+    // Get a list of all objects in the source bucket
+    const listObjectsParams = {
+      Bucket: sourceBucket,
+    };
+    const sourceObjects = await s3.listObjectsV2(listObjectsParams).promise();
+
+    // Loop through each object and copy it to the destination bucket
+    for (const obj of sourceObjects.Contents) {
+      const copyParams = {
+        Bucket: destinationBucket,
+        CopySource: `${sourceBucket}/${obj.Key}`,
+        Key: obj.Key,
+      };
+      await s3.copyObject(copyParams).promise();
+    }
+
+    return {
+      statusCode: 200,
+        body: JSON.stringify({ message: 'All objects copied successfully!' })
+    };
+  } catch (error) {
+    console.error('Error copying objects:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Error copying objects' })
+    };
+  }
+};

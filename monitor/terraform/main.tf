@@ -107,6 +107,7 @@ resource "aws_instance" "techscrum-monitor-ec2" {
   instance_type   = "t2.medium"
   security_groups = [aws_security_group.techscrum_ansible.name]
   key_name = var.key_name
+  role = "arn:aws:iam::152658500028:role/YACE"
 
   tags = {
     Name    = "techscrum-monitor"

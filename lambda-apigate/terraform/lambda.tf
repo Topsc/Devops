@@ -36,6 +36,8 @@ resource "aws_lambda_function" "handler" {
   runtime = "nodejs14.x"
   handler = "index.handler"
 
+  timeout = 180
+
   source_code_hash = data.archive_file.handler.output_base64sha256
 
   role = aws_iam_role.handler_lambda_exec.arn
