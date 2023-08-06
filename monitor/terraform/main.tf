@@ -6,7 +6,7 @@ terraform {
     bucket = "techscrum-tfstate-bucket"
     key    = "monitor-ec2-tfstate/terraform.tfstate"
     region = "ap-southeast-2"
-     
+
     # For State Locking
     dynamodb_table = "techscrum-lock-table"
   }
@@ -30,7 +30,7 @@ provider "aws" {
 }
 
 variable "key_name" {
-  type = string
+  type    = string
   default = "ansible_key_pair"
 }
 
@@ -83,7 +83,7 @@ resource "aws_security_group" "techscrum_ansible" {
     },
     {
       cidr_blocks = [
-         "0.0.0.0/0",
+        "0.0.0.0/0",
       ]
       description      = ""
       from_port        = 3000
@@ -102,12 +102,17 @@ resource "aws_security_group" "techscrum_ansible" {
   }
 }
 
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "ec2_profile"
+  role = "YACE"
+}
+
 resource "aws_instance" "techscrum-monitor-ec2" {
-  ami             = "ami-0567f647e75c7bc05"
-  instance_type   = "t2.medium"
-  security_groups = [aws_security_group.techscrum_ansible.name]
-  key_name = var.key_name
-  role = "arn:aws:iam::152658500028:role/YACE"
+  ami                  = "ami-0567f647e75c7bc05"
+  instance_type        = "t2.medium"
+  security_groups      = [aws_security_group.techscrum_ansible.name]
+  key_name             = var.key_name
+  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
 
   tags = {
     Name    = "techscrum-monitor"
@@ -117,7 +122,7 @@ resource "aws_instance" "techscrum-monitor-ec2" {
 
 
 variable "vpc_id" {
-  type = string
+  type    = string
   default = "vpc-00e63c32f47d29dc8"
 }
 
