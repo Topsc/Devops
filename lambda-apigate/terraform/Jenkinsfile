@@ -5,7 +5,7 @@ pipeline {
          
             steps {
                 script {
-                    dir('./backend') {
+                    dir('./lambda-apigate/terraform') {
                     withAWS(region:"ap-southeast-2", credentials:"jenkins_aws"){
                         sh "terraform init -reconfigure"
                         sh "terraform apply --auto-approve"
