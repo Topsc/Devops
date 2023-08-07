@@ -6,6 +6,8 @@ pipeline {
         ECR_REGISTRY = '152658500028.dkr.ecr.ap-southeast-2.amazonaws.com'
         ECR_REPOSITORY = 'techscrum-ecr-repo'
         AWS_REGION = 'ap-southeast-2'
+		JOB = 'Backend-CICD'
+		JOB_URL = 'http://34.129.229.29:8080/job/Backend-CICD/'
     }
 
     stages {
@@ -50,6 +52,11 @@ pipeline {
                     sh "docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
                 }
             }
+        }
+    }
+   post {
+        failure {
+            emailext attachLog: true, body: "The pipeline ${JOB} has failed. Please check the Jenkins job at ${JOB_URL}", subject: "Failed Pipeline: ${JOB}", to: "devopstechscrum@outlook.com"
         }
     }
 }

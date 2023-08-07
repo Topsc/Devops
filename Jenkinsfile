@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+		JOB = 'Techscrum-Main-branch-Pipeline'
+		JOB_URL = 'http://34.129.229.29:8080/job/Techscrum-Main-branch-Pipeline/'
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -12,6 +16,11 @@ pipeline {
             script {
                 checkAndTriggerDownstreamJobs()
             }
+        }
+    }
+   post {
+        failure {
+            emailext attachLog: true, body: "The pipeline ${JOB} has failed. Please check the Jenkins job at ${JOB_URL}", subject: "Failed Pipeline: ${JOB}", to: "devopstechscrum@outlook.com"
         }
     }
 }

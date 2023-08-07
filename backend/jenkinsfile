@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+		JOB = 'Backend-terraform'
+		JOB_URL = 'http://34.129.229.29:8080/job/Backend-terraform/'
+    }
     stages {
         stage('provision server') {
          
@@ -17,5 +21,10 @@ pipeline {
            }
         }
 
+    }
+   post {
+        failure {
+            emailext attachLog: true, body: "The pipeline ${JOB} has failed. Please check the Jenkins job at ${JOB_URL}", subject: "Failed Pipeline: ${JOB}", to: "devopstechscrum@outlook.com"
+        }
     }
 }
