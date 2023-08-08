@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main
+      - github-action-cicd
 
 jobs:
   build_and_deploy:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          repository: 'DevOps-Techscrum.fe'
+          repository: 'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
