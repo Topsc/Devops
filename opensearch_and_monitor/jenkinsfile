@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+		JOB = 'opensearch_and_monitor'
+		JOB_URL = 'http://34.129.229.29:8080/job/opensearch_and_monitor/'
+    }
     stages {
         stage('provision server') {
          
@@ -17,5 +21,10 @@ pipeline {
            }
         }
 
+    }
+   post {
+        failure {
+            emailext attachLog: true, body: "The pipeline ${JOB} has failed. Please check the Jenkins job at ${JOB_URL}", subject: "Failed Pipeline: ${JOB}", to: "devopstechscrum@outlook.com"
+        }
     }
 }
