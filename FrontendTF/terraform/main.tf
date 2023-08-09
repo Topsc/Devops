@@ -4,7 +4,7 @@ terraform {
   # }
   backend "s3" {
     bucket = "techscrum-tfstate-bucket"
-    key    = "frontend-tfstate/terraform.tfstate"
+    key    = "frontend-prod-tfstate/terraform.tfstate"
     region = "ap-southeast-2"
 
     # Enable during Step-09     
