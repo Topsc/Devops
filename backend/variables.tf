@@ -95,7 +95,7 @@ variable "task_max_count" {
 variable "domain_name" {
   description = "domain name"
   type        = string
-  default     = "techscrum.jiayuan.click"
+  default     = "tecscrum.com"
 }
 
 variable "sns_email" {
