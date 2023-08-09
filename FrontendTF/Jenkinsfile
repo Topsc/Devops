@@ -41,7 +41,7 @@ pipeline {
                 dir("./"){
                 withAWS(region:"ap-southeast-2", credentials:"jenkins_aws"){
                     // s3Delete(bucket: "${env.UATS3BucketName}", path:'**/*')
-                    s3Upload(bucket: "techscrum-linda-frontend", workingDir:'build', includePathPattern:'**/*');
+                    s3Upload(bucket: "techscrum-frontend-jr10", workingDir:'build', includePathPattern:'**/*');
                     }
                 } 
             }   

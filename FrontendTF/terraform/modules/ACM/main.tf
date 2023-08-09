@@ -6,7 +6,7 @@ resource "aws_acm_certificate" "cert" {
   validation_method         = "DNS"
   # provider = var.aws_provider
   tags = {
-    "Project"   = "techscrum-dev.lindalu.click"
+    "Project"   = "www.tecscrum.com"
     "ManagedBy" = "Terraform"
   }
 }

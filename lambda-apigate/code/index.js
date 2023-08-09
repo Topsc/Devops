@@ -5,7 +5,7 @@ exports.handler = async (event, context) => {
   
 console.log('Received event:', JSON.stringify(event));
   
-  const sourceBucket = "techscrum-linda-frontend";
+  const sourceBucket = "techscrum-frontend-jr10";
   const destinationBucket = "techscrum-s3-backup-serverless";
 
   try {

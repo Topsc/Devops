@@ -1,12 +1,12 @@
 variable "bucket_name" {
   type        = string
   description = "The name for the S3 bucket"
-  default     = "techscrum-linda-frontend"
+  default     = "techscrum-frontend-jr10"
 }
 variable "domain_name" {
   type        = string
   description = "The domain name to use"
-  default     = "techscrum-dev.lindalu.click"
+  default     = "www.tecscrum.com"
 }
 
 variable "oai-iam-arn" {
