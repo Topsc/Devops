@@ -3,3 +3,9 @@ variable "domain_name" {
   description = "The domain name to use"
   default     = "www.tecscrum.com"
 }
+
+variable "hostzone_name" {
+  type        = string
+  description = "The hostzone name"
+  default     = "tecscrum.com"
+}
