@@ -60,7 +60,7 @@ variable "app_environment_prod" {
 variable "health_check_path" {
   description = "target group health check path"
   type        = string
-  default     = "/api/v1/healthcheck"
+  default     = "/api/v2/healthcheck"
 }
 
 variable "port" {
