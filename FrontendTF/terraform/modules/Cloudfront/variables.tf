@@ -22,3 +22,8 @@ variable "input_acm_certificate_arn" {
 variable "oai-iam" {
   
 }
+variable "asterisk_domain_name" {
+  type        = string
+  description = "The domain name to use"
+  default     = "*.tecscrum.com"
+}

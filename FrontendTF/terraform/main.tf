@@ -58,7 +58,7 @@ module "route53" {
 module "cloudfront" {
   source = "./modules/Cloudfront"
   input_s3_bucket = module.s3.bucket
-  input_acm_certificate_arn = module.acm-cert.acm-cert-arn
+  input_acm_certificate_arn = module.acm-cert.acm-cert-arn-asterisk
   oai-iam = aws_cloudfront_origin_access_identity.oai
 
 }

@@ -21,3 +21,14 @@ resource "aws_route53_record" "websiteurl" {
 }
 
 
+resource "aws_route53_record" "frontend-new-record" {
+  zone_id = data.aws_route53_zone.hosted_zone.zone_id
+  name = "*.tecscrum.com"
+  type = "CNAME"
+  ttl = 300
+
+  records = [
+    var.domain_name
+  ]
+}
+

@@ -5,7 +5,7 @@
 # cloudfront terraform - creating AWS Cloudfront distribution :
 resource "aws_cloudfront_distribution" "cf_dist" {
   enabled             = true
-  aliases             = [var.domain_name]
+  aliases             = [var.domain_name,var.asterisk_domain_name]
   default_root_object = "index.html"
   origin {
     domain_name = var.input_s3_bucket.bucket_regional_domain_name
@@ -40,7 +40,7 @@ resource "aws_cloudfront_distribution" "cf_dist" {
   viewer_certificate {
     acm_certificate_arn      = var.input_acm_certificate_arn
     ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2018"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
   custom_error_response {
     error_caching_min_ttl = 300
