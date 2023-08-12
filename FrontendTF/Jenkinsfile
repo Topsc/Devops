@@ -9,7 +9,7 @@ pipeline {
             steps{
                 // Get source code from a GitHub repository
                 
-                git branch:'main', credentialsId:'jenkins_node', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
+                git branch:'new-fe', credentialsId:'jenkins_node', url:'git@github.com:DevOpsTechscrum/DevOps-Techscrum.fe.git'
             
             }
         }
