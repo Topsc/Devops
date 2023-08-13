@@ -28,10 +28,13 @@ terraform {
     dynamodb_table = "techscrum-lock-table"
   }
 }
+module "ses" {
+  source          = "./modules/ses" // path to your module
+}
+
 module "s3" {
   source          = "./modules/s3" // path to your module
   bucket_name     = var.bucket_name
-  bucket_env_name = var.bucket_env_name
 }
 
 module "ecr_repository" {
@@ -106,8 +109,6 @@ module "ecs" {
   repository_url          = module.ecr_repository.repository_url
   listener_arn            = module.alb.listener_arn
   tg_prod_arn             = module.alb.tg_prod_arn
-  bucket_env_name         = var.bucket_env_name
-  s3_object               = module.s3.s3_object
 }
 
 module "cloudwatch" {
