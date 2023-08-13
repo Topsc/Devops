@@ -29,12 +29,12 @@ terraform {
   }
 }
 module "ses" {
-  source          = "./modules/ses" // path to your module
+  source = "./modules/ses" // path to your module
 }
 
 module "s3" {
-  source          = "./modules/s3" // path to your module
-  bucket_name     = var.bucket_name
+  source      = "./modules/s3" // path to your module
+  bucket_name = var.bucket_name
 }
 
 module "ecr_repository" {
