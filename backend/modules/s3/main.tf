@@ -21,14 +21,3 @@ resource "aws_s3_bucket" "backend_bucket" {
 }
 POLICY
 }
-
-resource "aws_s3_bucket" "backend_env_bucket" {
-  bucket = var.bucket_env_name
-  acl    = "private"
-}
-
-resource "aws_s3_bucket_object" "object" {
-  bucket = aws_s3_bucket.backend_env_bucket.id
-  key    = "config/.env"
-  source = "~/.env" # replace this with your .env file path
-}

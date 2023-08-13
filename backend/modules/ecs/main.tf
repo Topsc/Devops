@@ -1,3 +1,79 @@
+#############################################################################################################
+#                                    ecsTaskExecutionRole 
+############################################################################################################
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+  
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "sts:AssumeRole",
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      },
+      Effect = "Allow",
+      Sid    = ""
+    }]
+  })
+}
+
+resource "aws_iam_policy" "ecs_base_policy" {
+  name        = "ECSBasePolicy"
+  description = "Base policy for ECS to pull images and log events"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      Resource = "*",
+      Effect   = "Allow"
+    }]
+  })
+}
+
+resource "aws_iam_policy" "ssm_app_policy" {
+  name        = "SSMAppPolicy"
+  description = "Policy for SSM parameters under /techscrum/"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action   = "ssm:GetParameter",
+      Resource = "arn:aws:ssm:ap-southeast-2:152658500028:parameter/techscrum/*",
+      Effect   = "Allow"
+    }]
+  })
+}
+resource "aws_iam_role_policy_attachment" "ecs_base_policy_attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.ecs_base_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_ssm_app_policy_attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.ssm_app_policy.arn
+}
+
+data "aws_ssm_parameters_by_path" "config_params" {
+  path = "/techscrum/"
+}
+
+data "aws_ssm_parameter" "ssm_params" {
+  for_each = toset(data.aws_ssm_parameters_by_path.config_params.names)
+  name     = each.value
+}
+locals {
+  ssm_values = {
+    for name, param in data.aws_ssm_parameter.ssm_params : name => param.value
+  }
+}
 #######################################################################################################################
 #                                               Create ECS
 #######################################################################################################################
@@ -22,18 +98,14 @@ resource "aws_cloudwatch_log_group" "log_group_uat" {
   }
 }
 
-data "aws_iam_role" "ecsExecutionRole" {
-  name = "ecsTaskExecutionRole"
-}
-
 resource "aws_ecs_task_definition" "task_uat" {
   family                   = "${var.app_name}-task-denifition-${var.app_environment_uat}"
   network_mode             = "awsvpc"
   cpu                      = "1024" # equivalent to 1 vCPU
   memory                   = "3072" # equivalent to 3GB
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn       = data.aws_iam_role.ecsExecutionRole.arn
-  task_role_arn            = data.aws_iam_role.ecsExecutionRole.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
   container_definitions = jsonencode([
     {
       name      = "${var.app_name}-container-${var.app_environment_uat}",
@@ -56,19 +128,34 @@ resource "aws_ecs_task_definition" "task_uat" {
           "awslogs-stream-prefix" = "${var.app_name}-${var.app_environment_uat}"
         }
       },
-      environmentFiles = [
-        {
-          value = "arn:aws:s3:::${var.bucket_env_name}/config/.env"
-          type  = "s3"
-        }
-      ]
+      environment = [
+      { name = "ENVIRONMENT", value = local.ssm_values["/techscrum/ENVIRONMENT"] },
+      { name = "NAME",     value = local.ssm_values["/techscrum/NAME"] },
+      { name = "PORT",     value = local.ssm_values["/techscrum/PORT"] },
+      { name = "API_PREFIX",     value = local.ssm_values["/techscrum/API_PREFIX"] },
+      { name = "AWS_REGION",     value = local.ssm_values["/techscrum/REGION"] },  
+      { name = "AWS_ACCESS_KEY_ID",     value = local.ssm_values["/techscrum/ACCESS_KEY_ID"] },
+      { name = "AWS_SECRET_ACCESS_KEY",     value = local.ssm_values["/techscrum/SECRET_ACCESS_KEY"] },
+      { name = "ACCESS_SECRET",     value = local.ssm_values["/techscrum/ACCESS_SECRET"] },
+      { name = "EMAIL_SECRET",     value = local.ssm_values["/techscrum/EMAIL_SECRET"] },
+      { name = "FORGET_SECRET",     value = local.ssm_values["/techscrum/FORGET_SECRET"] },
+      { name = "LIMITER",     value = local.ssm_values["/techscrum/LIMITER"] },
+      { name = "MAIN_DOMAIN",     value = local.ssm_values["/techscrum/MAIN_DOMAIN"] },   
+      { name = "PUBLIC_CONNECTION",     value = local.ssm_values["/techscrum/PUBLIC_CONNECTION"] },     
+      { name = "TENANTS_CONNECTION",     value = local.ssm_values["/techscrum/TENANTS_CONNECTION"] },     
+      { name = "STRIPE_PRIVATE_KEY",     value = local.ssm_values["/techscrum/STRIPE_PRIVATE_KEY"] }, 
+      { name = "STRIPE_WEBHOOK_SECRET",     value = local.ssm_values["/techscrum/STRIPE_WEBHOOK_SECRET"] }
+    ]
     }
   ])
   tags = {
     Name        = "${var.app_name}-task-denifition-${var.app_environment_uat}"
     Environment = var.app_environment_uat
   }
-  depends_on = [var.s3_object]
+  depends_on = [
+    aws_iam_role_policy_attachment.ecs_base_policy_attachment,
+    aws_iam_role_policy_attachment.ecs_ssm_app_policy_attachment
+  ]
 }
 
 ///create uat ecs servcie
@@ -117,8 +204,8 @@ resource "aws_ecs_task_definition" "task_prod" {
   cpu                      = "1024" # equivalent to 1 vCPU
   memory                   = "3072" # equivalent to 3GB
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn       = data.aws_iam_role.ecsExecutionRole.arn
-  task_role_arn            = data.aws_iam_role.ecsExecutionRole.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
@@ -142,19 +229,34 @@ resource "aws_ecs_task_definition" "task_prod" {
           "awslogs-stream-prefix" = "${var.app_name}-${var.app_environment_prod}"
         }
       },
-      environmentFiles = [
-        {
-          value = "arn:aws:s3:::${var.bucket_env_name}/config/.env"
-          type  = "s3"
-        }
-      ]
+      environment = [
+      { name = "ENVIRONMENT", value = local.ssm_values["/techscrum/ENVIRONMENT"] },
+      { name = "NAME",     value = local.ssm_values["/techscrum/NAME"] },
+      { name = "PORT",     value = local.ssm_values["/techscrum/PORT"] },
+      { name = "API_PREFIX",     value = local.ssm_values["/techscrum/API_PREFIX"] },
+      { name = "AWS_REGION",     value = local.ssm_values["/techscrum/REGION"] },  
+      { name = "AWS_ACCESS_KEY_ID",     value = local.ssm_values["/techscrum/ACCESS_KEY_ID"] },
+      { name = "AWS_SECRET_ACCESS_KEY",     value = local.ssm_values["/techscrum/SECRET_ACCESS_KEY"] },
+      { name = "ACCESS_SECRET",     value = local.ssm_values["/techscrum/ACCESS_SECRET"] },
+      { name = "EMAIL_SECRET",     value = local.ssm_values["/techscrum/EMAIL_SECRET"] },
+      { name = "FORGET_SECRET",     value = local.ssm_values["/techscrum/FORGET_SECRET"] },
+      { name = "LIMITER",     value = local.ssm_values["/techscrum/LIMITER"] },
+      { name = "MAIN_DOMAIN",     value = local.ssm_values["/techscrum/MAIN_DOMAIN"] },   
+      { name = "PUBLIC_CONNECTION",     value = local.ssm_values["/techscrum/PUBLIC_CONNECTION"] },     
+      { name = "TENANTS_CONNECTION",     value = local.ssm_values["/techscrum/TENANTS_CONNECTION"] },     
+      { name = "STRIPE_PRIVATE_KEY",     value = local.ssm_values["/techscrum/STRIPE_PRIVATE_KEY"] }, 
+      { name = "STRIPE_WEBHOOK_SECRET",     value = local.ssm_values["/techscrum/STRIPE_WEBHOOK_SECRET"] }
+    ]
     }
   ])
   tags = {
     Name        = "${var.app_name}-task-denifition-${var.app_environment_prod}"
     Environment = var.app_environment_prod
   }
-  depends_on = [var.s3_object]
+  depends_on = [
+    aws_iam_role_policy_attachment.ecs_base_policy_attachment,
+    aws_iam_role_policy_attachment.ecs_ssm_app_policy_attachment
+  ]
 }
 
 ///create ecs servcie
@@ -182,41 +284,6 @@ resource "aws_ecs_service" "service_prod" {
     Environment = var.app_environment_prod
   }
 }
-
-///iam policy for ecsTaskExecutionRole
-resource "aws_iam_policy" "s3_access_policy" {
-  name        = "${var.app_name}-ecs-task-s3-access-policy"
-  path        = "/"
-  description = "Policy for ECS task to access S3"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::${var.bucket_env_name}/*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "s3:GetBucketLocation",
-      "Resource": "arn:aws:s3:::${var.bucket_env_name}"
-    }
-  ]
-}
-EOF
-}
-
-data "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_s3_access" {
-  role       = data.aws_iam_role.ecs_task_execution_role.name
-  policy_arn = aws_iam_policy.s3_access_policy.arn
-}
-
 #######################################################################################################################
 #                                               Auto Scale Group
 #######################################################################################################################
