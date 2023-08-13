@@ -1,9 +1,13 @@
 #############################################################################################################
 #                                    ecsTaskExecutionRole 
 ############################################################################################################
+data "aws_region" "current" {}
+
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "ecsTaskExecutionRole"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
@@ -46,7 +50,7 @@ resource "aws_iam_policy" "ssm_app_policy" {
     Version = "2012-10-17",
     Statement = [{
       Action   = "ssm:GetParameter",
-      Resource = "arn:aws:ssm:ap-southeast-2:152658500028:parameter/techscrum/*",
+      Resource = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/techscrum/*",
       Effect   = "Allow"
     }]
   })
@@ -129,23 +133,23 @@ resource "aws_ecs_task_definition" "task_uat" {
         }
       },
       environment = [
-      { name = "ENVIRONMENT", value = local.ssm_values["/techscrum/ENVIRONMENT"] },
-      { name = "NAME",     value = local.ssm_values["/techscrum/NAME"] },
-      { name = "PORT",     value = local.ssm_values["/techscrum/PORT"] },
-      { name = "API_PREFIX",     value = local.ssm_values["/techscrum/API_PREFIX"] },
-      { name = "AWS_REGION",     value = local.ssm_values["/techscrum/REGION"] },  
-      { name = "AWS_ACCESS_KEY_ID",     value = local.ssm_values["/techscrum/ACCESS_KEY_ID"] },
-      { name = "AWS_SECRET_ACCESS_KEY",     value = local.ssm_values["/techscrum/SECRET_ACCESS_KEY"] },
-      { name = "ACCESS_SECRET",     value = local.ssm_values["/techscrum/ACCESS_SECRET"] },
-      { name = "EMAIL_SECRET",     value = local.ssm_values["/techscrum/EMAIL_SECRET"] },
-      { name = "FORGET_SECRET",     value = local.ssm_values["/techscrum/FORGET_SECRET"] },
-      { name = "LIMITER",     value = local.ssm_values["/techscrum/LIMITER"] },
-      { name = "MAIN_DOMAIN",     value = local.ssm_values["/techscrum/MAIN_DOMAIN"] },   
-      { name = "PUBLIC_CONNECTION",     value = local.ssm_values["/techscrum/PUBLIC_CONNECTION"] },     
-      { name = "TENANTS_CONNECTION",     value = local.ssm_values["/techscrum/TENANTS_CONNECTION"] },     
-      { name = "STRIPE_PRIVATE_KEY",     value = local.ssm_values["/techscrum/STRIPE_PRIVATE_KEY"] }, 
-      { name = "STRIPE_WEBHOOK_SECRET",     value = local.ssm_values["/techscrum/STRIPE_WEBHOOK_SECRET"] }
-    ]
+        { name = "ENVIRONMENT", value = local.ssm_values["/techscrum/ENVIRONMENT"] },
+        { name = "NAME", value = local.ssm_values["/techscrum/NAME"] },
+        { name = "PORT", value = local.ssm_values["/techscrum/PORT"] },
+        { name = "API_PREFIX", value = local.ssm_values["/techscrum/API_PREFIX"] },
+        { name = "AWS_REGION", value = local.ssm_values["/techscrum/REGION"] },
+        { name = "AWS_ACCESS_KEY_ID", value = local.ssm_values["/techscrum/ACCESS_KEY_ID"] },
+        { name = "AWS_SECRET_ACCESS_KEY", value = local.ssm_values["/techscrum/SECRET_ACCESS_KEY"] },
+        { name = "ACCESS_SECRET", value = local.ssm_values["/techscrum/ACCESS_SECRET"] },
+        { name = "EMAIL_SECRET", value = local.ssm_values["/techscrum/EMAIL_SECRET"] },
+        { name = "FORGET_SECRET", value = local.ssm_values["/techscrum/FORGET_SECRET"] },
+        { name = "LIMITER", value = local.ssm_values["/techscrum/LIMITER"] },
+        { name = "MAIN_DOMAIN", value = local.ssm_values["/techscrum/MAIN_DOMAIN"] },
+        { name = "PUBLIC_CONNECTION", value = local.ssm_values["/techscrum/PUBLIC_CONNECTION"] },
+        { name = "TENANTS_CONNECTION", value = local.ssm_values["/techscrum/TENANTS_CONNECTION"] },
+        { name = "STRIPE_PRIVATE_KEY", value = local.ssm_values["/techscrum/STRIPE_PRIVATE_KEY"] },
+        { name = "STRIPE_WEBHOOK_SECRET", value = local.ssm_values["/techscrum/STRIPE_WEBHOOK_SECRET"] }
+      ]
     }
   ])
   tags = {
@@ -230,23 +234,23 @@ resource "aws_ecs_task_definition" "task_prod" {
         }
       },
       environment = [
-      { name = "ENVIRONMENT", value = local.ssm_values["/techscrum/ENVIRONMENT"] },
-      { name = "NAME",     value = local.ssm_values["/techscrum/NAME"] },
-      { name = "PORT",     value = local.ssm_values["/techscrum/PORT"] },
-      { name = "API_PREFIX",     value = local.ssm_values["/techscrum/API_PREFIX"] },
-      { name = "AWS_REGION",     value = local.ssm_values["/techscrum/REGION"] },  
-      { name = "AWS_ACCESS_KEY_ID",     value = local.ssm_values["/techscrum/ACCESS_KEY_ID"] },
-      { name = "AWS_SECRET_ACCESS_KEY",     value = local.ssm_values["/techscrum/SECRET_ACCESS_KEY"] },
-      { name = "ACCESS_SECRET",     value = local.ssm_values["/techscrum/ACCESS_SECRET"] },
-      { name = "EMAIL_SECRET",     value = local.ssm_values["/techscrum/EMAIL_SECRET"] },
-      { name = "FORGET_SECRET",     value = local.ssm_values["/techscrum/FORGET_SECRET"] },
-      { name = "LIMITER",     value = local.ssm_values["/techscrum/LIMITER"] },
-      { name = "MAIN_DOMAIN",     value = local.ssm_values["/techscrum/MAIN_DOMAIN"] },   
-      { name = "PUBLIC_CONNECTION",     value = local.ssm_values["/techscrum/PUBLIC_CONNECTION"] },     
-      { name = "TENANTS_CONNECTION",     value = local.ssm_values["/techscrum/TENANTS_CONNECTION"] },     
-      { name = "STRIPE_PRIVATE_KEY",     value = local.ssm_values["/techscrum/STRIPE_PRIVATE_KEY"] }, 
-      { name = "STRIPE_WEBHOOK_SECRET",     value = local.ssm_values["/techscrum/STRIPE_WEBHOOK_SECRET"] }
-    ]
+        { name = "ENVIRONMENT", value = local.ssm_values["/techscrum/ENVIRONMENT"] },
+        { name = "NAME", value = local.ssm_values["/techscrum/NAME"] },
+        { name = "PORT", value = local.ssm_values["/techscrum/PORT"] },
+        { name = "API_PREFIX", value = local.ssm_values["/techscrum/API_PREFIX"] },
+        { name = "AWS_REGION", value = local.ssm_values["/techscrum/REGION"] },
+        { name = "AWS_ACCESS_KEY_ID", value = local.ssm_values["/techscrum/ACCESS_KEY_ID"] },
+        { name = "AWS_SECRET_ACCESS_KEY", value = local.ssm_values["/techscrum/SECRET_ACCESS_KEY"] },
+        { name = "ACCESS_SECRET", value = local.ssm_values["/techscrum/ACCESS_SECRET"] },
+        { name = "EMAIL_SECRET", value = local.ssm_values["/techscrum/EMAIL_SECRET"] },
+        { name = "FORGET_SECRET", value = local.ssm_values["/techscrum/FORGET_SECRET"] },
+        { name = "LIMITER", value = local.ssm_values["/techscrum/LIMITER"] },
+        { name = "MAIN_DOMAIN", value = local.ssm_values["/techscrum/MAIN_DOMAIN"] },
+        { name = "PUBLIC_CONNECTION", value = local.ssm_values["/techscrum/PUBLIC_CONNECTION"] },
+        { name = "TENANTS_CONNECTION", value = local.ssm_values["/techscrum/TENANTS_CONNECTION"] },
+        { name = "STRIPE_PRIVATE_KEY", value = local.ssm_values["/techscrum/STRIPE_PRIVATE_KEY"] },
+        { name = "STRIPE_WEBHOOK_SECRET", value = local.ssm_values["/techscrum/STRIPE_WEBHOOK_SECRET"] }
+      ]
     }
   ])
   tags = {
