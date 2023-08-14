@@ -38,20 +38,21 @@ resource "aws_lambda_permission" "allow_cloudwatch_performance_prod" {
 
   source_arn = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/ecs/containerinsights/${var.app_name}-ecs-cluster-${var.app_environment_prod}/performance:*"
 }
-# resource "aws_lambda_permission" "allow_cloudwatch_service_prod" {
-#   statement_id  = "AllowExecutionFromCloudWatchServiceProd"
-#   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.log_lambda.function_name
-#   principal     = "logs.${data.aws_region.current.name}.amazonaws.com"
-#   source_arn = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.app_name}-ecs-service-${var.app_environment_prod}:*"
-# }
-# resource "aws_lambda_permission" "allow_cloudwatch_service_uat" {
-#   statement_id  = "AllowExecutionFromCloudWatchServiceUat"
-#   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.log_lambda.function_name
-#   principal     = "logs.${data.aws_region.current.name}.amazonaws.com"
-#   source_arn = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.app_name}-ecs-service-${var.app_environment_uat}:*"
-# }
+
+resource "aws_lambda_permission" "allow_cloudwatch_service_prod" {
+  statement_id  = "AllowExecutionFromCloudWatchServiceProd"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.log_lambda.function_name
+  principal     = "logs.${data.aws_region.current.name}.amazonaws.com"
+  source_arn    = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.app_name}-log-group-${var.app_environment_prod}:*"
+}
+resource "aws_lambda_permission" "allow_cloudwatch_service_uat" {
+  statement_id  = "AllowExecutionFromCloudWatchServiceUat"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.log_lambda.function_name
+  principal     = "logs.${data.aws_region.current.name}.amazonaws.com"
+  source_arn    = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.app_name}-log-group-${var.app_environment_uat}:*"
+}
 
 //create the log subscription
 resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter_performance_uat" {
@@ -68,17 +69,17 @@ resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter_perform
   destination_arn = aws_lambda_function.log_lambda.arn
   depends_on      = [aws_lambda_permission.allow_cloudwatch_performance_prod]
 }
-# resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter_service_prod" {
-#   name            = "cloudwatch_to_es_filter_service_prod"
-#   log_group_name  = "${var.app_name}-ecs-service-${var.app_environment_prod}"
-#   filter_pattern  = "" // Add your filter pattern here
-#   destination_arn = aws_lambda_function.log_lambda.arn
-#   depends_on      = [aws_lambda_permission.allow_cloudwatch_service_prod]
-# }
-# resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter_service_uat" {
-#   name            = "cloudwatch_to_es_filter_service_uat"
-#   log_group_name  = "${var.app_name}-ecs-service-${var.app_environment_uat}"
-#   filter_pattern  = "" // Add your filter pattern here
-#   destination_arn = aws_lambda_function.log_lambda.arn
-#   depends_on      = [aws_lambda_permission.allow_cloudwatch_service_uat]
-# }
+resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter_service_prod" {
+  name            = "cloudwatch_to_es_filter_service_prod"
+  log_group_name  = "${var.app_name}-log-group-${var.app_environment_prod}"
+  filter_pattern  = "" // Add your filter pattern here
+  destination_arn = aws_lambda_function.log_lambda.arn
+  depends_on      = [aws_lambda_permission.allow_cloudwatch_service_prod]
+}
+resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter_service_uat" {
+  name            = "cloudwatch_to_es_filter_service_uat"
+  log_group_name  = "${var.app_name}-log-group-${var.app_environment_uat}"
+  filter_pattern  = "" // Add your filter pattern here
+  destination_arn = aws_lambda_function.log_lambda.arn
+  depends_on      = [aws_lambda_permission.allow_cloudwatch_service_uat]
+}
