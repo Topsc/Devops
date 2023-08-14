@@ -124,6 +124,13 @@ resource "aws_ecs_task_definition" "task_uat" {
           protocol      = "tcp"
         }
       ],
+      healthCheck = {
+        command     = ["CMD-SHELL", "curl -f http://localhost:8000/api/v2/healthcheck || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 0
+      },
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -225,6 +232,13 @@ resource "aws_ecs_task_definition" "task_prod" {
           protocol      = "tcp"
         }
       ],
+      healthCheck = {
+        command     = ["CMD-SHELL", "curl -f http://localhost:8000/api/v2/healthcheck || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 0
+      },
       logConfiguration = {
         logDriver = "awslogs"
         options = {
