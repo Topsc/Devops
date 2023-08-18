@@ -71,8 +71,8 @@ pipeline {
      
   stage('Deploy to GKE') {
             steps{
-	//		   dir("$GKE_DIR") {
-            dir('./backend/k8s/'){ 
+			   dir("$GKE_DIR") {
+           // dir('./backend/k8s/'){ 
                 sh "sed -i 's/${ECR_REPOSITORY}:latest/${ECR_REPOSITORY}:${SHA}/g' backend-deployment.yaml"
                 step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: 'backend-deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
 				}
