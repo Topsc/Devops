@@ -9,6 +9,13 @@ pipeline {
 		JOB = 'Backend-CICD'
 		JOB_URL = 'http://34.129.229.29:8080/job/Backend-CICD/'
 
+     GKE_DIR  ='k8s'
+        IMAGE_TAG="latest"
+		    SHA      = "${currentBuild.number}"
+		  PROJECT_ID = 'storied-yew-391502'
+    CLUSTER_NAME = 'my-cluster-10'
+    LOCATION = 'us-central1'
+    CREDENTIALS_ID = 'multi-k8s'
 
     }
 
@@ -62,6 +69,14 @@ pipeline {
             }
         }
      
+  stage('Deploy to GKE') {
+            steps{
+			   dir("$GKE_DIR") {
+                sh "sed -i 's/${ECR_REPOSITORY}:latest/${ECR_REPOSITORY}:${SHA}/g' backend-deployment.yaml"
+                step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: 'backend-deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+				}
+            }
+        }
 
 
     }
