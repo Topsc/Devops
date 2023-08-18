@@ -16,6 +16,9 @@ pipeline {
     CLUSTER_NAME = 'my-cluster-10'
     LOCATION = 'us-central1'
     CREDENTIALS_ID = 'multi-k8s'
+       DOCKERHUB_CREDENTIALS = credentials('dockerID')
+   DOCKER_HUB_NAME ='jack2210'
+
 
     }
 
@@ -48,26 +51,35 @@ pipeline {
                   //  sh "docker build -t ${DOCKER_IMAGE} ."
                  	sh """
                docker --version
-              docker build -t "${DOCKER_IMAGE}:${IMAGE_TAG}" -t "${DOCKER_IMAGE}:${SHA}"  .
+             // docker build -t "${DOCKER_IMAGE}:${IMAGE_TAG}" -t "${DOCKER_IMAGE}:${SHA}"  .
+                  docker build -t "${DOCKER_HUB_NAME}/${DOCKER_IMAGE}:${IMAGE_TAG}" -t "${DOCKER_HUB_NAME}/${DOCKER_IMAGE}:${SHA}" .
                    """
                 }
             }
-        }
+        } 
 
-        stage('Push to AWS ECR') {
-            steps {
-                script {
-                    // Login to ECR
-                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
 
-                    // Tag Docker image
-                    sh "docker tag ${DOCKER_IMAGE}:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+      	stage('Login') {
+      steps {
+           script {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+      }
+          }
+    }
+	
+	
+	stage('Push') {
+      steps {
+           script {
+          sh 'docker push "${DOCKER_HUB_NAME}/${DOCKER_IMAGE}:${SHA}"  '
+                 sh 'docker push "${DOCKER_HUB_NAME}/${DOCKER_IMAGE}:${IMAGE_TAG}"  '
+      }
 
-                    // Push Docker image to AWS ECR
-                    sh "docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
-                }
-            }
-        }
+          }
+    }
+
+
+
      
   stage('Deploy to GKE') {
             steps{
