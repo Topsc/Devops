@@ -3,9 +3,6 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'techscrum'
-        //ECR_REGISTRY = '152658500028.dkr.ecr.ap-southeast-2.amazonaws.com'
-        //ECR_REPOSITORY = 'techscrum-ecr-repo'
-        AWS_REGION = 'ap-southeast-2'
 		JOB = 'Backend-CICD-GCP'
 		JOB_URL = 'http://34.129.229.29:8080/job/Backend-CICD-GCP'
 
@@ -13,7 +10,7 @@ pipeline {
         IMAGE_TAG="latest"
 		    SHA      = "${currentBuild.number}"
 		  PROJECT_ID = 'storied-yew-391502'
-    CLUSTER_NAME = 'my-cluster-11'
+    CLUSTER_NAME = 'my-cluster-12'
     LOCATION = 'us-central1'
     CREDENTIALS_ID = 'multi-k8s'
        DOCKERHUB_CREDENTIALS = credentials('dockerID')
