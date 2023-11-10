@@ -1,25 +1,64 @@
 pipeline {
     agent any
+
     environment {
-		JOB = 'Backend-terraform'
-		JOB_URL = 'http://34.129.229.29:8080/job/Backend-terraform/'
+        DOCKER_IMAGE = 'techscrum'
+        ECR_REGISTRY = '152658500028.dkr.ecr.ap-southeast-2.amazonaws.com'
+        ECR_REPOSITORY = 'techscrum-ecr-repo'
+        AWS_REGION = 'ap-southeast-2'
+		JOB = 'Backend-CICD'
+		JOB_URL = 'http://34.129.229.29:8080/job/Backend-CICD/'
+
+
     }
+
     stages {
-        stage('provision server') {
-         
+
+        stage('Checkout') {
+            steps {
+                git(branch: 'main', credentialsId: 'jenkins_node', url: 'git@github.com:DevOpsTechscrum/DevOps-Techscrum.be.git')
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                    sh 'npm install'
+                    sh 'npm run build'
+                    sh 'npm run lint'
+                    sh 'docker builder prune -f'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                    sh 'npm run test'
+            }
+        }
+        stage('Build Docker Image') {
             steps {
                 script {
-                    dir('./backend') {
-                    withAWS(region:"ap-southeast-2", credentials:"jenkins_aws"){
-                        sh "terraform init -reconfigure"
-                        sh "terraform apply --auto-approve"
-                        
-                        }
-                    }
+                    // Build the Docker image
+                    sh "docker build -t ${DOCKER_IMAGE} ."
                 }
-        
-           }
+            }
         }
+
+        stage('Push to AWS ECR') {
+            steps {
+                script {
+                    // Login to ECR
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
+
+                    // Tag Docker image
+                    sh "docker tag ${DOCKER_IMAGE}:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+
+                    // Push Docker image to AWS ECR
+                    sh "docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+                }
+            }
+        }
+     
+
 
     }
    post {
