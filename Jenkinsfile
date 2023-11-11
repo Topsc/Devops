@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-		JOB = 'TechscrumInfra'
-		JOB_URL = 'http://localhost:8080/job/TechscrumInfra/'
+		JOB = 'Techscrum-Main-branch-Pipeline'
+		JOB_URL = 'http://34.129.229.29:8080/job/Techscrum-Main-branch-Pipeline/'
     }
     stages {
         stage('Checkout') {
@@ -17,6 +17,41 @@ pipeline {
                 checkAndTriggerDownstreamJobs()
             }
         }
+    }
+   post {
+        failure {
+            emailext attachLog: true, body: "The pipeline ${JOB} has failed. Please check the Jenkins job at ${JOB_URL}", subject: "Failed Pipeline: ${JOB}", to: "devopstechscrum@outlook.com"
+        }
+    }
+}
+
+@NonCPS
+def checkAndTriggerDownstreamJobs() {
+    def changeLogSets = currentBuild.changeSets
+    def frontendChanged = false
+    def backendChanged = false
+    def monitorChanged = false
+
+    for (int i = 0; i < changeLogSets.size(); i++) {
+        def entries = changeLogSets[i].items
+        for (int j = 0; j < entries.length; j++) {
+            def entry = entries[j]
+            def affectedFiles = entry.affectedFiles
+            for (int k = 0; k < affectedFiles.size(); k++) {
+                def file = affectedFiles[k]
+                if (file.path.contains("FrontendTF")) {
+                    frontendChanged = true
+                }
+                if (file.path.contains("backend")) {
+                    backendChanged = true
+                }
+                if (file.path.contains("opensearch_and_monitor")) {
+                    monitorChanged = true
+                }
+            }
+        }
+    }
+
     if (frontendChanged) {
         build job: 'techscrum-frontend-terraform-pipeline', wait: true
     }
