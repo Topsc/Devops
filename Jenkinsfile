@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git(branch: 'jenkins', credentialsId: 'jenkins_node', url: 'git@github.com:DevOpsTechscrum/DevOps-Techscrum.be.git')
+                git(branch: 'jenkins', credentialsId: 'jenkins_node', url: 'git@github.com:Topsc/Techscrum.be.git')
             }
         }
     }
