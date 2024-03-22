@@ -101,7 +101,7 @@ resource "aws_sns_topic_subscription" "user_updates" {
  
   topic_arn = aws_sns_topic.my_sns.arn
   protocol  = "email"
-  endpoint  = "chaolin1984@gmail.com"
+  endpoint  = ""
 }
 
 
